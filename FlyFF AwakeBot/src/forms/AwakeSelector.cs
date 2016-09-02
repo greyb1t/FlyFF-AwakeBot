@@ -26,7 +26,7 @@ namespace FlyFF_AwakeBot {
         }
 
         private void Form1_Load(object sender, EventArgs e) {
-            this.BackColor = Color.Red;
+            this.BackColor = Color.Green;
             this.TransparencyKey = Color.Red;
             this.Opacity = 0.5;
 
