@@ -23,7 +23,7 @@ namespace FlyFF_AwakeBot.src {
         }
 
         /// <summary>
-        /// Splits a string of multiple awakes into a list of awakes.
+        /// Splits a string or multiple awakes into a list of awakes.
         /// </summary>
         /// <returns></returns>
         private List<Awake> SplitAwakeLines() {
