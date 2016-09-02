@@ -64,6 +64,7 @@
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configDirectoryToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.howToUseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optimizationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btnStartBot = new System.Windows.Forms.Button();
@@ -72,7 +73,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.howToUseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarMsDelay)).BeginInit();
             this.gbNewAwake.SuspendLayout();
@@ -494,10 +494,17 @@
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "Help";
             // 
+            // howToUseToolStripMenuItem
+            // 
+            this.howToUseToolStripMenuItem.Name = "howToUseToolStripMenuItem";
+            this.howToUseToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
+            this.howToUseToolStripMenuItem.Text = "How to use";
+            this.howToUseToolStripMenuItem.Click += new System.EventHandler(this.howToUseToolStripMenuItem_Click);
+            // 
             // optimizationToolStripMenuItem
             // 
             this.optimizationToolStripMenuItem.Name = "optimizationToolStripMenuItem";
-            this.optimizationToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.optimizationToolStripMenuItem.Size = new System.Drawing.Size(143, 22);
             this.optimizationToolStripMenuItem.Text = "Optimization";
             this.optimizationToolStripMenuItem.Click += new System.EventHandler(this.optimizationToolStripMenuItem_Click);
             // 
@@ -566,16 +573,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(369, 528);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 13);
+            this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.0";
-            // 
-            // howToUseToolStripMenuItem
-            // 
-            this.howToUseToolStripMenuItem.Name = "howToUseToolStripMenuItem";
-            this.howToUseToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.howToUseToolStripMenuItem.Text = "How to use";
-            this.howToUseToolStripMenuItem.Click += new System.EventHandler(this.howToUseToolStripMenuItem_Click);
+            this.label8.Text = "Version: 1.02";
             // 
             // AwakeBotUserInterface
             // 

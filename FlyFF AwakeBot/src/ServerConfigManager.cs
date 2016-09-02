@@ -11,6 +11,7 @@ namespace FlyFF_AwakeBot {
     public class ServerConfigManager {
         public List<Awake> AwakeTypes { get; set; } = new List<Awake>();
         public Pixel AwakeTextPixelColor { get; set; }
+        public int ScrollDelay { get; set; }
 
         private string ConfigDirectory;
         private string ConfigName;
@@ -35,6 +36,12 @@ namespace FlyFF_AwakeBot {
 
                 string pixelColor = ReadSettingValue(root, "AwakeTextPixelColorRgb");
                 AwakeTextPixelColor = ConvertRgbColorString(pixelColor);
+
+                string scrollDelay = ReadSettingValue(root, "ScrollDelayMs");
+                ScrollDelay = Convert.ToInt32(scrollDelay);
+
+                if (scrollDelay == null)
+                    ScrollDelay = 200;
             }
             catch (FileNotFoundException) {
                 GeneralUtils.DisplayError("Unable to load awake config " + ConfigDirectory);

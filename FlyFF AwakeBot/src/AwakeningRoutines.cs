@@ -145,7 +145,8 @@ namespace FlyFF_AwakeBot.src {
                     // Click item with reversion
                     BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
 
-                    Thread.Sleep(ms);
+                    // Wait until the reversion is done on the item
+                    Thread.Sleep(ConfigManager.ScrollDelay);
 
                     // Doubleclick awake scroll
                     BotHelper.SimulateMouseClick(Ui.Process.Handle, AwakeScrollPosition);
@@ -156,11 +157,16 @@ namespace FlyFF_AwakeBot.src {
                     // Click item with awake scroll
                     BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
 
+                    //// Wait until the awake is done on the item
+                    //Thread.Sleep(ConfigManager.ScrollDelay);
                     Thread.Sleep(ms);
 
                     BotHelper.SetCursorPosition(new Point(ItemPosition.X + 200, ItemPosition.Y + 200));
                     Thread.Sleep(ms);
                     BotHelper.SetCursorPosition(ItemPosition);
+
+                    // Wait until the awake is done on the item
+                    Thread.Sleep(ConfigManager.ScrollDelay);
 
                     bmp.Dispose();
 
