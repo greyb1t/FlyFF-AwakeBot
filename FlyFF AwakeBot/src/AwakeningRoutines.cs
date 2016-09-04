@@ -103,6 +103,7 @@ namespace FlyFF_AwakeBot.src {
                     Bitmap bmp = awakeResolver.SnapshotRectangle(InventoryRectangle);
                     bmp = awakeResolver.DifferentiateAwakeText(bmp);
                     bmp = awakeResolver.IncreaseBitmapSize(bmp, 300);
+                    bmp = awakeResolver.CropBitmapSmart(bmp);
                     string awakeText = awakeResolver.GetAwakening(bmp);
 
                     AwakeningParser awakeParser = new AwakeningParser(Ui, ConfigManager, awakeText);

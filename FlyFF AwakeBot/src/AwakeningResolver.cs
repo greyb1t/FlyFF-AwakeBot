@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using FlyFF_AwakeBot.Utils;
 using Tesseract;
+using System.Collections.Generic;
 
 namespace FlyFF_AwakeBot {
 
@@ -31,7 +32,14 @@ namespace FlyFF_AwakeBot {
             ConfigManager = configManager;
 
             try {
-                TessEngine = new TesseractEngine("tessdata", "eng");
+                TessEngine = new TesseractEngine("tessdata", ConfigManager.Language);
+
+                string characters = "";
+
+                foreach (char c in ConfigManager.WhitelistedCharacters)
+                    characters += c;
+
+                TessEngine.SetVariable("tessedit_char_whitelist", "+-%0123456789 " + characters);
                 TessEngine.DefaultPageSegMode = PageSegMode.SingleBlock;
             }
             catch (Exception ex) {
@@ -118,7 +126,7 @@ namespace FlyFF_AwakeBot {
             int height = bitmap.Height;
 
             int newWidth = (int)(width + width * ((double)(percentage) / 100));
-            int newHeight = (int)(height + height * ((double)(percentage * 1.7) / 100)); // 1.5
+            int newHeight = (int)(height + height * ((double)(percentage * 1.7) / 100)); // 1.7
 
             bitmap = ResizeImage(bitmap, new Size(newWidth, newHeight));
 
@@ -190,7 +198,7 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <param name="pixelCallback"></param>
-        unsafe private void ForeachPixel(Bitmap bitmap, PixelIterationCallback pixelCallback) {
+        unsafe public void ForeachPixel(Bitmap bitmap, PixelIterationCallback pixelCallback) {
             BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
                 ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
 
@@ -204,6 +212,103 @@ namespace FlyFF_AwakeBot {
             }
 
             bitmap.UnlockBits(bmpData);
+        }
+
+        unsafe public delegate bool PixelIterationCallbackCheckBreak(int x, int y, Pixel* pPixel);
+
+        /// <summary>
+        /// Highly optimized function that iterates through bitmap pixels with simplicity and supports breaking in the middle of looping.
+        /// Can most likely be optimized even more with while loop instead of two for loops.
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <param name="pixelCallback"></param>
+        unsafe public void ForeachPixelCheckBreak(Bitmap bitmap, PixelIterationCallbackCheckBreak pixelCallback) {
+            BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
+
+            byte* pBeg = (byte*)bmpData.Scan0.ToPointer();
+
+            bool shouldBreak = false;
+
+            for (int y = 0; y < bmpData.Height; ++y) {
+                for (int x = 0; x < bmpData.Width; ++x) {
+
+                    if (!pixelCallback(x, y, (Pixel*)pBeg)) {
+                        shouldBreak = true;
+                        break;
+                    }
+
+                    pBeg += sizeof(Pixel);
+                }
+
+                if (shouldBreak)
+                    break;
+            }
+
+            bitmap.UnlockBits(bmpData);
+        }
+
+        /// <summary>
+        /// Crops the black text from the big white background and returns a smaller bitmap.
+        /// </summary>
+        /// <param name="bitmap"></param>
+        /// <returns></returns>
+        public unsafe Bitmap CropBitmapSmart(Bitmap bitmap) {
+            int bottom = 0;
+            int top = 0;
+            int right = 0;
+            int left = bitmap.Width;
+
+            // Determine bottom
+            ForeachPixel(bitmap, (x, y, pixel) => {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+                    if (y > bottom)
+                        bottom = y;
+                }
+            });
+
+            // Determine top
+            ForeachPixelCheckBreak(bitmap, (x, y, pixel) => {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+                    top = y;
+                    return false;
+                }
+
+                return true;
+            });
+
+            top -= 30;
+            bottom += 30;
+
+            if (top < 0)
+                top = 0;
+
+            bitmap = CropBitmap(bitmap, new Rectangle(0, top, bitmap.Width, bottom - top));
+
+            // Determine right
+            ForeachPixel(bitmap, (x, y, pixel) => {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+                    if (x > right)
+                        right = x;
+                }
+            });
+
+            // Determine left
+            ForeachPixel(bitmap, (x, y, pixel) => {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+                    if (x < left)
+                        left = x;
+                }
+            });
+
+            left -= 30;
+            right += 30;
+
+            if (left < 0)
+                left = 0;
+
+            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
+            return bitmap;
         }
     }
 }
