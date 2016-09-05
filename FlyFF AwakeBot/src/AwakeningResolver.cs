@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using FlyFF_AwakeBot.Utils;
 using Tesseract;
 using System.Collections.Generic;
+using FlyFF_AwakeBot.src;
 
 namespace FlyFF_AwakeBot {
 
@@ -27,9 +28,11 @@ namespace FlyFF_AwakeBot {
     class AwakeningResolver : IDisposable {
         private TesseractEngine TessEngine { get; set; }
         private ServerConfigManager ConfigManager { get; }
+        private AwakeningRoutines AwakeRoutines { get; }
 
-        public AwakeningResolver(ServerConfigManager configManager) {
+        public AwakeningResolver(ServerConfigManager configManager, AwakeningRoutines awakeRoutines) {
             ConfigManager = configManager;
+            AwakeRoutines = awakeRoutines;
 
             try {
                 TessEngine = new TesseractEngine("tessdata", ConfigManager.Language);
@@ -186,10 +189,23 @@ namespace FlyFF_AwakeBot {
         /// <param name="cropRectangle"></param>
         /// <returns></returns>
         public Bitmap CropBitmap(Bitmap bitmap, Rectangle cropRectangle) {
-            using (Bitmap newBitmap = new Bitmap(bitmap)) {
-                bitmap.Dispose();
-                return newBitmap.Clone(cropRectangle, newBitmap.PixelFormat);
+            try {
+                using (Bitmap newBitmap = new Bitmap(bitmap)) {
+                    bitmap.Dispose();
+                    return newBitmap.Clone(cropRectangle, newBitmap.PixelFormat);
+                }
             }
+            catch (OutOfMemoryException) {
+                AwakeRoutines.CrossThreadAppendLog("A bitmap has made an attempt to clone an invalid bitmap " + 
+                    "rectangle or not enough memory was available.\n" + cropRectangle.ToString() + "\n");
+            }
+
+            Bitmap cleanBitmap = new Bitmap(100, 100);
+            using (Graphics g = Graphics.FromImage(cleanBitmap)) {
+                g.FillRectangle(Brushes.White, new Rectangle(0, 0, 100, 100));
+            }
+
+            return cleanBitmap;
         }
 
         unsafe public delegate void PixelIterationCallback(int x, int y, Pixel *pPixel);
@@ -261,6 +277,9 @@ namespace FlyFF_AwakeBot {
             int right = 0;
             int left = bitmap.Width;
 
+            int originalBmpWidth = bitmap.Width;
+            int originalBmpHeight = bitmap.Height;
+
             // Determine bottom
             ForeachPixel(bitmap, (x, y, pixel) => {
                 if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
@@ -285,6 +304,9 @@ namespace FlyFF_AwakeBot {
             if (top < 0)
                 top = 0;
 
+            if (bottom == 30)
+                bottom = originalBmpHeight;
+
             bitmap = CropBitmap(bitmap, new Rectangle(0, top, bitmap.Width, bottom - top));
 
             // Determine right
@@ -308,8 +330,13 @@ namespace FlyFF_AwakeBot {
 
             if (left < 0)
                 left = 0;
+            else if (left == originalBmpWidth)
+                left = 0;
 
-//            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
+            if (right < left)
+                right = originalBmpWidth;
+
+            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
             return bitmap;
         }
     }

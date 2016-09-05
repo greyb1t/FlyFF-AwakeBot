@@ -86,7 +86,7 @@ namespace FlyFF_AwakeBot.src {
                 // Hover over the item to check the awake
                 BotHelper.SetCursorPosition(ItemPosition);
 
-                using (AwakeningResolver awakeResolver = new AwakeningResolver(ConfigManager)) {
+                using (AwakeningResolver awakeResolver = new AwakeningResolver(ConfigManager, this)) {
 
                     if (IsStopped())
                         break;

@@ -575,7 +575,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.07";
+            this.label8.Text = "Version: 1.08";
             // 
             // AwakeBotUserInterface
             // 
