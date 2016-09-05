@@ -186,8 +186,10 @@ namespace FlyFF_AwakeBot {
         /// <param name="cropRectangle"></param>
         /// <returns></returns>
         public Bitmap CropBitmap(Bitmap bitmap, Rectangle cropRectangle) {
-            Bitmap newBitmap = new Bitmap(bitmap);
-            return newBitmap.Clone(cropRectangle, newBitmap.PixelFormat);
+            using (Bitmap newBitmap = new Bitmap(bitmap)) {
+                bitmap.Dispose();
+                return newBitmap.Clone(cropRectangle, newBitmap.PixelFormat);
+            }
         }
 
         unsafe public delegate void PixelIterationCallback(int x, int y, Pixel *pPixel);
@@ -307,7 +309,7 @@ namespace FlyFF_AwakeBot {
             if (left < 0)
                 left = 0;
 
-            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
+//            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
             return bitmap;
         }
     }
