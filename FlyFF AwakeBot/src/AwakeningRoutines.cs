@@ -249,11 +249,11 @@ namespace FlyFF_AwakeBot.src {
             }
 
             foreach (bool req in preferredAwakeRequirements) {
-                if (!req)
-                    return false;
+                if (req)
+                    return true;
             }
 
-            return true;
+            return false;
         }
 
         public bool IsStopped() {
