@@ -8,50 +8,81 @@ using FlyFF_AwakeBot.Utils;
 using Tesseract;
 using System.Collections.Generic;
 using FlyFF_AwakeBot.src;
+using System.Linq;
+using System.IO;
 
-namespace FlyFF_AwakeBot {
-
+namespace FlyFF_AwakeBot
+{
     [StructLayout(LayoutKind.Sequential)]
-    public struct Pixel {
+    public struct Pixel
+    {
         public byte b;
         public byte g;
         public byte r;
         public byte alpha;
     };
 
-    enum PixelType {
+    enum PixelType
+    {
         R,
         G,
         B
     }
 
-    class AwakeningResolver : IDisposable {
+    class AwakeningResolver : IDisposable
+    {
         private TesseractEngine TessEngine { get; set; }
         private ServerConfigManager ConfigManager { get; }
         private AwakeningRoutines AwakeRoutines { get; }
 
-        public AwakeningResolver(ServerConfigManager configManager, AwakeningRoutines awakeRoutines) {
+        public AwakeningResolver(ServerConfigManager configManager, AwakeningRoutines awakeRoutines)
+        {
             ConfigManager = configManager;
             AwakeRoutines = awakeRoutines;
 
-            try {
-                TessEngine = new TesseractEngine("tessdata", ConfigManager.Language);
+            // Write the eng.user-words
+            /*
+                string dictionary = "";
 
+                foreach (var awake in configManager.AwakeTypes)
+                {
+                    dictionary += awake.Text + "\n";
+                }
+
+                using (StreamWriter sw = new StreamWriter("tessdata\\eng.user-words"))
+                {
+                    sw.Write(dictionary);
+                }
+            */
+
+            try
+            {
                 string characters = "";
 
                 foreach (char c in ConfigManager.WhitelistedCharacters)
                     characters += c;
 
-                TessEngine.SetVariable("tessedit_char_whitelist", "+-%0123456789 " + characters);
-                TessEngine.DefaultPageSegMode = PageSegMode.SingleBlock;
+                var initVars = new Dictionary<string, object>() {
+                     { "load_system_dawg", false },
+                     { "load_freq_dawg", false },
+                     // { "user_words_suffix", "user-words" }, // Load custom dictionary from eng.user-words
+                    { "tessedit_char_whitelist", "+-%0123456789 " + characters },
+                };
+
+                TessEngine = new TesseractEngine("tessdata", ConfigManager.Language, EngineMode.Default, Enumerable.Empty<string>(), initVars, false)
+                {
+                    DefaultPageSegMode = PageSegMode.SingleBlock
+                };
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 GeneralUtils.DisplayError(ex.ToString());
                 Application.Exit();
             }
         }
 
-        public void Dispose() {
+        public void Dispose()
+        {
             if (!TessEngine.IsDisposed)
                 TessEngine.Dispose();
         }
@@ -61,8 +92,10 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public string GetAwakening(Bitmap bitmap) {
-            using (var page = TessEngine.Process(bitmap)) {
+        public string GetAwakening(Bitmap bitmap)
+        {
+            using (var page = TessEngine.Process(bitmap))
+            {
                 return page.GetText();
             }
         }
@@ -72,11 +105,13 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="rectangle"></param>
         /// <returns></returns>
-        public Bitmap SnapshotRectangle(Rectangle rectangle) {
+        public Bitmap SnapshotRectangle(Rectangle rectangle)
+        {
             Bitmap bitmap = new Bitmap(rectangle.Width, rectangle.Height, PixelFormat.Format24bppRgb);
 
-            using (Graphics g = Graphics.FromImage(bitmap)) {
-                g.CopyFromScreen(rectangle.Left, rectangle.Top, 
+            using (Graphics g = Graphics.FromImage(bitmap))
+            {
+                g.CopyFromScreen(rectangle.Left, rectangle.Top,
                     0, 0, new Size(rectangle.Width, rectangle.Height), CopyPixelOperation.SourceCopy);
             }
 
@@ -89,14 +124,16 @@ namespace FlyFF_AwakeBot {
         /// <param name="bitmap"></param>
         /// <param name="newSize"></param>
         /// <returns></returns>
-        public Bitmap ResizeImage(Bitmap bitmap, Size newSize) {
+        public Bitmap ResizeImage(Bitmap bitmap, Size newSize)
+        {
             Rectangle newSizeRectangle = new Rectangle(Point.Empty, newSize);
             Bitmap newBitmap = new Bitmap(newSize.Width, newSize.Height);
 
             // Use 300 DPI because it's better for tesseract
             newBitmap.SetResolution(300, 300);
 
-            using (Graphics g = Graphics.FromImage(newBitmap)) {
+            using (Graphics g = Graphics.FromImage(newBitmap))
+            {
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighQuality;
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
@@ -104,7 +141,8 @@ namespace FlyFF_AwakeBot {
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
                 // Required to remove the smooth black borders when an image has been resized
-                using (var imgAttr = new ImageAttributes()) {
+                using (var imgAttr = new ImageAttributes())
+                {
                     imgAttr.SetWrapMode(WrapMode.TileFlipXY);
                     g.DrawImage(bitmap, newSizeRectangle, 0, 0, bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imgAttr);
                 }
@@ -121,12 +159,13 @@ namespace FlyFF_AwakeBot {
         /// <param name="bitmap"></param>
         /// <param name="percentage"></param>
         /// <returns></returns>
-        public Bitmap IncreaseBitmapSize(Bitmap bitmap, int percentage) {
+        public Bitmap IncreaseBitmapSize(Bitmap bitmap, float percentage)
+        {
             if (percentage < 0)
                 percentage = 0;
 
-            int width = bitmap.Width;
-            int height = bitmap.Height;
+            float width = bitmap.Width;
+            float height = bitmap.Height;
 
             int newWidth = (int)(width + width * ((double)(percentage) / 100));
             int newHeight = (int)(height + height * ((double)(percentage * 1.7) / 100)); // 1.7
@@ -142,10 +181,12 @@ namespace FlyFF_AwakeBot {
         /// <param name="oldBitmap"></param>
         /// <param name="pxlFormat"></param>
         /// <returns></returns>
-        public Bitmap ConvertBitmapPixelFormat(Bitmap oldBitmap, PixelFormat pxlFormat) {
+        public Bitmap ConvertBitmapPixelFormat(Bitmap oldBitmap, PixelFormat pxlFormat)
+        {
             Bitmap newBitmap = new Bitmap(oldBitmap.Width, oldBitmap.Height, pxlFormat);
 
-            using (Graphics g = Graphics.FromImage(oldBitmap)) {
+            using (Graphics g = Graphics.FromImage(oldBitmap))
+            {
                 g.DrawImage(oldBitmap, new Rectangle(0, 0, newBitmap.Width, newBitmap.Height));
             }
 
@@ -157,21 +198,25 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public Bitmap DifferentiateAwakeText(Bitmap bitmap) {
+        public Bitmap DifferentiateAwakeText(Bitmap bitmap)
+        {
             Pixel requiredPixelColor = ConfigManager.AwakeTextPixelColor;
 
-            unsafe {
-                ForeachPixel(bitmap, (x, y, pixel) => {
-
-                    if (pixel->r == requiredPixelColor.r && 
-                    pixel->g == requiredPixelColor.g && 
-                    pixel->b == requiredPixelColor.b) {
+            unsafe
+            {
+                ForeachPixel(bitmap, (x, y, pixel) =>
+                {
+                    if (pixel->r == requiredPixelColor.r &&
+                    pixel->g == requiredPixelColor.g &&
+                    pixel->b == requiredPixelColor.b)
+                    {
 
                         pixel->r = 0;
                         pixel->g = 0;
                         pixel->b = 0;
                     }
-                    else {
+                    else
+                    {
                         pixel->r = 255;
                         pixel->g = 255;
                         pixel->b = 255;
@@ -188,27 +233,32 @@ namespace FlyFF_AwakeBot {
         /// <param name="bitmap"></param>
         /// <param name="cropRectangle"></param>
         /// <returns></returns>
-        public Bitmap CropBitmap(Bitmap bitmap, Rectangle cropRectangle) {
-            try {
-                using (Bitmap newBitmap = new Bitmap(bitmap)) {
+        public Bitmap CropBitmap(Bitmap bitmap, Rectangle cropRectangle)
+        {
+            try
+            {
+                using (Bitmap newBitmap = new Bitmap(bitmap))
+                {
                     bitmap.Dispose();
                     return newBitmap.Clone(cropRectangle, newBitmap.PixelFormat);
                 }
             }
-            catch (OutOfMemoryException) {
-                AwakeRoutines.CrossThreadAppendLog("A bitmap has made an attempt to clone an invalid bitmap " + 
+            catch (OutOfMemoryException)
+            {
+                AwakeRoutines.CrossThreadAppendLog("A bitmap has made an attempt to clone an invalid bitmap " +
                     "rectangle or not enough memory was available.\n" + cropRectangle.ToString() + "\n");
             }
 
             Bitmap cleanBitmap = new Bitmap(100, 100);
-            using (Graphics g = Graphics.FromImage(cleanBitmap)) {
+            using (Graphics g = Graphics.FromImage(cleanBitmap))
+            {
                 g.FillRectangle(Brushes.White, new Rectangle(0, 0, 100, 100));
             }
 
             return cleanBitmap;
         }
 
-        unsafe public delegate void PixelIterationCallback(int x, int y, Pixel *pPixel);
+        unsafe public delegate void PixelIterationCallback(int x, int y, Pixel* pPixel);
 
         /// <summary>
         /// Highly optimized function that iterates through bitmap pixels with simplicity.
@@ -216,15 +266,18 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <param name="pixelCallback"></param>
-        unsafe public void ForeachPixel(Bitmap bitmap, PixelIterationCallback pixelCallback) {
+        unsafe public void ForeachPixel(Bitmap bitmap, PixelIterationCallback pixelCallback)
+        {
             BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
                 ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
 
-            byte *pBeg = (byte *)bmpData.Scan0.ToPointer();
+            byte* pBeg = (byte*)bmpData.Scan0.ToPointer();
 
-            for (int y = 0; y < bmpData.Height; ++y) {
-                for (int x = 0; x < bmpData.Width; ++x) {
-                    pixelCallback(x, y, (Pixel *)pBeg);
+            for (int y = 0; y < bmpData.Height; ++y)
+            {
+                for (int x = 0; x < bmpData.Width; ++x)
+                {
+                    pixelCallback(x, y, (Pixel*)pBeg);
                     pBeg += sizeof(Pixel);
                 }
             }
@@ -240,7 +293,8 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <param name="pixelCallback"></param>
-        unsafe public void ForeachPixelCheckBreak(Bitmap bitmap, PixelIterationCallbackCheckBreak pixelCallback) {
+        unsafe public void ForeachPixelCheckBreak(Bitmap bitmap, PixelIterationCallbackCheckBreak pixelCallback)
+        {
             BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
                 ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
 
@@ -248,10 +302,12 @@ namespace FlyFF_AwakeBot {
 
             bool shouldBreak = false;
 
-            for (int y = 0; y < bmpData.Height; ++y) {
-                for (int x = 0; x < bmpData.Width; ++x) {
-
-                    if (!pixelCallback(x, y, (Pixel*)pBeg)) {
+            for (int y = 0; y < bmpData.Height; ++y)
+            {
+                for (int x = 0; x < bmpData.Width; ++x)
+                {
+                    if (!pixelCallback(x, y, (Pixel*)pBeg))
+                    {
                         shouldBreak = true;
                         break;
                     }
@@ -271,7 +327,8 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public unsafe Bitmap CropBitmapSmart(Bitmap bitmap) {
+        public unsafe Bitmap CropBitmapSmart(Bitmap bitmap)
+        {
             int bottom = 0;
             int top = 0;
             int right = 0;
@@ -281,16 +338,20 @@ namespace FlyFF_AwakeBot {
             int originalBmpHeight = bitmap.Height;
 
             // Determine bottom
-            ForeachPixel(bitmap, (x, y, pixel) => {
-                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+            ForeachPixel(bitmap, (x, y, pixel) =>
+            {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255)
+                {
                     if (y > bottom)
                         bottom = y;
                 }
             });
 
             // Determine top
-            ForeachPixelCheckBreak(bitmap, (x, y, pixel) => {
-                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+            ForeachPixelCheckBreak(bitmap, (x, y, pixel) =>
+            {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255)
+                {
                     top = y;
                     return false;
                 }
@@ -299,27 +360,41 @@ namespace FlyFF_AwakeBot {
             });
 
             top -= 30;
-            bottom += 30;
 
             if (top < 0)
                 top = 0;
 
+            bottom += 30;
+
             if (bottom == 30)
                 bottom = originalBmpHeight;
+            else if (bottom > originalBmpHeight)
+                bottom = originalBmpHeight;
 
-            bitmap = CropBitmap(bitmap, new Rectangle(0, top, bitmap.Width, bottom - top));
+            int newHeight = bottom - top;
+
+            if (bitmap.Height < newHeight)
+            {
+                newHeight = bitmap.Height;
+            }
+
+            bitmap = CropBitmap(bitmap, new Rectangle(0, top, bitmap.Width, newHeight));
 
             // Determine right
-            ForeachPixel(bitmap, (x, y, pixel) => {
-                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+            ForeachPixel(bitmap, (x, y, pixel) =>
+            {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255)
+                {
                     if (x > right)
                         right = x;
                 }
             });
 
             // Determine left
-            ForeachPixel(bitmap, (x, y, pixel) => {
-                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255) {
+            ForeachPixel(bitmap, (x, y, pixel) =>
+            {
+                if (pixel->r != 255 && pixel->g != 255 && pixel->b != 255)
+                {
                     if (x < left)
                         left = x;
                 }
@@ -336,7 +411,14 @@ namespace FlyFF_AwakeBot {
             if (right < left)
                 right = originalBmpWidth;
 
-            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, right - left, bitmap.Height));
+            int newWidth = right - left;
+
+            if (bitmap.Width < newWidth)
+            {
+                newWidth = bitmap.Width;
+            }
+
+            bitmap = CropBitmap(bitmap, new Rectangle(left, 0, newWidth, bitmap.Height));
             return bitmap;
         }
     }

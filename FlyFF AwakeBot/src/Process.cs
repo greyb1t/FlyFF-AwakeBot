@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FlyFF_AwakeBot {
-
-    public struct EnumWindowProcess {
+namespace FlyFF_AwakeBot
+{
+    public struct EnumWindowProcess
+    {
         public int processId;
         public IntPtr windowHandle;
     }
 
-    public class Process {
+    public class Process
+    {
         public string ProcessName { get; set; }
 
         public int ProcessId { get; set; }
@@ -19,7 +21,8 @@ namespace FlyFF_AwakeBot {
 
         public Process() { }
 
-        public Process(string processName, int processId, IntPtr handle, IntPtr windowHandle) {
+        public Process(string processName, int processId, IntPtr handle, IntPtr windowHandle)
+        {
             ProcessName = processName;
             ProcessId = processId;
             Handle = handle;
@@ -31,7 +34,8 @@ namespace FlyFF_AwakeBot {
         /// </summary>
         /// <param name="processId"></param>
         /// <returns></returns>
-        static public IntPtr GetWindowHandle(int processId) {
+        static public IntPtr GetWindowHandle(int processId)
+        {
             EnumWindowProcess ewp = new EnumWindowProcess();
             ewp.processId = processId;
 
@@ -57,13 +61,15 @@ namespace FlyFF_AwakeBot {
         /// <param name="hWindow"></param>
         /// <param name="lParam"></param>
         /// <returns></returns>
-        unsafe static private bool EnumWindowsCallback(IntPtr hWindow, IntPtr lParam) {
+        unsafe static private bool EnumWindowsCallback(IntPtr hWindow, IntPtr lParam)
+        {
             uint procId;
             Win32API.GetWindowThreadProcessId(hWindow, out procId);
 
             EnumWindowProcess* windowProcess = (EnumWindowProcess*)lParam.ToPointer();
 
-            if (procId == windowProcess->processId) {
+            if (procId == windowProcess->processId)
+            {
                 windowProcess->windowHandle = hWindow;
                 return false;
             }

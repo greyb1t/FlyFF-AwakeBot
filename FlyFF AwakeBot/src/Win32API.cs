@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FlyFF_AwakeBot {
-
-    enum ShowWindowCommands {
+namespace FlyFF_AwakeBot
+{
+    enum ShowWindowCommands
+    {
         Hide = 0,
         Normal = 1,
         ShowMinimized = 2,
@@ -19,8 +20,8 @@ namespace FlyFF_AwakeBot {
         ForceMinimize = 11
     }
 
-    class Win32API {
-
+    class Win32API
+    {
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);

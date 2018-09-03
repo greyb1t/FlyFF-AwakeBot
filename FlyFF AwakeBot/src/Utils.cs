@@ -1,27 +1,33 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace FlyFF_AwakeBot.Utils {
-    class GeneralUtils {
-
-        public static void DisplayError(string message) {
+namespace FlyFF_AwakeBot.Utils
+{
+    class GeneralUtils
+    {
+        public static void DisplayError(string message)
+        {
             MessageBox.Show(message, "greyb1t's Flyff Awakebot", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
-        public static void DisplayInfo(string message) {
+        public static void DisplayInfo(string message)
+        {
             MessageBox.Show(message, "greyb1t's Flyff Awakebot", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 
-    class StringUtils {
+    class StringUtils
+    {
 
         /// <summary>
         /// Check whether a whole string is only numbers.
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool IsPureNumber(string s) {
-            foreach (char c in s) {
+        public static bool IsPureNumber(string s)
+        {
+            foreach (char c in s)
+            {
                 if (!Char.IsDigit(c))
                     return false;
             }
@@ -34,8 +40,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool ContainsNumber(string s) {
-            foreach (char c in s) {
+        public static bool ContainsNumber(string s)
+        {
+            foreach (char c in s)
+            {
                 if (Char.IsDigit(c))
                     return true;
             }
@@ -49,8 +57,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// <param name="chars"></param>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool ContainsSpecifiedCharacters(string chars, string s) {
-            foreach (char c in chars) {
+        public static bool ContainsSpecifiedCharacters(string chars, string s)
+        {
+            foreach (char c in chars)
+            {
                 if (s.IndexOf(c) == -1)
                     return false;
             }
@@ -63,8 +73,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static bool ContainsLetters(string s) {
-            foreach (char c in s) {
+        public static bool ContainsLetters(string s)
+        {
+            foreach (char c in s)
+            {
                 if (Char.IsLetter(c))
                     return true;
             }
@@ -72,7 +84,8 @@ namespace FlyFF_AwakeBot.Utils {
             return false;
         }
 
-        public static bool ContainsPlusOrMinus(string s) {
+        public static bool ContainsPlusOrMinus(string s)
+        {
             return ContainsSpecifiedCharacters("+", s) || ContainsSpecifiedCharacters("-", s);
         }
 
@@ -81,8 +94,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static string StripAllExceptNumbers(string s) {
-            for (int j = 0; j < s.Length; ++j) {
+        public static string StripAllExceptNumbers(string s)
+        {
+            for (int j = 0; j < s.Length; ++j)
+            {
                 //if (!Char.IsDigit(s[j]))
                 if (s[j] < '0' || s[j] > '9')
                     s = s.Remove(j, 1);
@@ -96,8 +111,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static string StripAllSpaces(string s) {
-            for (int j = 0; j < s.Length; ++j) {
+        public static string StripAllSpaces(string s)
+        {
+            for (int j = 0; j < s.Length; ++j)
+            {
                 if (Char.IsWhiteSpace(s[j]))
                     s = s.Remove(j, 1);
             }
@@ -110,8 +127,10 @@ namespace FlyFF_AwakeBot.Utils {
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        public static string StripAllNewlines(string s) {
-            for (int j = 0; j < s.Length; ++j) {
+        public static string StripAllNewlines(string s)
+        {
+            for (int j = 0; j < s.Length; ++j)
+            {
                 if (s[j] == '\n')
                     s = s.Remove(j, 1);
             }

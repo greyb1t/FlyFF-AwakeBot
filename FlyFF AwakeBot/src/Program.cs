@@ -1,18 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using FlyFF_AwakeBot.Utils;
 
-namespace FlyFF_AwakeBot {
-    static class Program {
+namespace FlyFF_AwakeBot
+{
+    static class Program
+    {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main()
+        {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
@@ -21,22 +21,26 @@ namespace FlyFF_AwakeBot {
             string tessdataXmlName = "Tesseract.xml";
             string settingsFileName = "Settings.xml";
 
-            if (!Directory.Exists(tessdataFolderName)) {
+            if (!Directory.Exists(tessdataFolderName))
+            {
                 ErrorFileMissing(tessdataFolderName);
                 return;
             }
 
-            if (!File.Exists(tessdataDllName)) {
+            if (!File.Exists(tessdataDllName))
+            {
                 ErrorFileMissing(tessdataDllName);
                 return;
             }
 
-            if (!File.Exists(tessdataXmlName)) {
+            if (!File.Exists(tessdataXmlName))
+            {
                 ErrorFileMissing(tessdataXmlName);
                 return;
             }
 
-            if (!File.Exists(settingsFileName)) {
+            if (!File.Exists(settingsFileName))
+            {
                 ErrorFileMissing(settingsFileName);
                 return;
             }
@@ -44,7 +48,8 @@ namespace FlyFF_AwakeBot {
             Application.Run(new ProcessSelector());
         }
 
-        static void ErrorFileMissing(string fileName) {
+        static void ErrorFileMissing(string fileName)
+        {
             GeneralUtils.DisplayError("Unable to start because " + fileName + " is not found.");
         }
     }

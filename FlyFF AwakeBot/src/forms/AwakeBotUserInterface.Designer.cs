@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AwakeBotUserInterface));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbSupportAugmentation = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.lblInventoryRectangle = new System.Windows.Forms.Label();
             this.lblReversionPosition = new System.Windows.Forms.Label();
@@ -63,6 +64,8 @@
             this.configDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configDirectoryToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.debugToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.imageProcessingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.howToUseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optimizationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -73,16 +76,35 @@
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
+            this.TabControlDebugImageProcessing = new System.Windows.Forms.TabControl();
+            this.TabControlDebugImageProcessingPage1 = new System.Windows.Forms.TabPage();
+            this.PictureBoxDebug1 = new System.Windows.Forms.PictureBox();
+            this.TabControlDebugImageProcessingPage2 = new System.Windows.Forms.TabPage();
+            this.PictureBoxDebug2 = new System.Windows.Forms.PictureBox();
+            this.TabControlDebugImageProcessingPage3 = new System.Windows.Forms.TabPage();
+            this.PictureBoxDebug3 = new System.Windows.Forms.PictureBox();
+            this.TabControlDebugImageProcessingPage4 = new System.Windows.Forms.TabPage();
+            this.PictureBoxDebug4 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarMsDelay)).BeginInit();
             this.gbNewAwake.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericAwakeValue)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.TabControlDebugImageProcessing.SuspendLayout();
+            this.TabControlDebugImageProcessingPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug1)).BeginInit();
+            this.TabControlDebugImageProcessingPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug2)).BeginInit();
+            this.TabControlDebugImageProcessingPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug3)).BeginInit();
+            this.TabControlDebugImageProcessingPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug4)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbSupportAugmentation);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.lblInventoryRectangle);
             this.groupBox1.Controls.Add(this.lblReversionPosition);
@@ -111,6 +133,18 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Setup";
+            // 
+            // cbSupportAugmentation
+            // 
+            this.cbSupportAugmentation.AutoSize = true;
+            this.cbSupportAugmentation.Location = new System.Drawing.Point(14, 82);
+            this.cbSupportAugmentation.Name = "cbSupportAugmentation";
+            this.cbSupportAugmentation.Size = new System.Drawing.Size(143, 17);
+            this.cbSupportAugmentation.TabIndex = 12;
+            this.cbSupportAugmentation.Text = "Click Awake Scroll Once";
+            this.toolTipItemPos.SetToolTip(this.cbSupportAugmentation, "Clicks the awake scroll position only once.\r\nThis should be used with the /awake " +
+        "command or Augmentation Scroll.");
+            this.cbSupportAugmentation.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
@@ -259,7 +293,7 @@
             // lblMsDelay
             // 
             this.lblMsDelay.AutoSize = true;
-            this.lblMsDelay.Location = new System.Drawing.Point(373, 63);
+            this.lblMsDelay.Location = new System.Drawing.Point(373, 57);
             this.lblMsDelay.Name = "lblMsDelay";
             this.lblMsDelay.Size = new System.Drawing.Size(21, 13);
             this.lblMsDelay.TabIndex = 8;
@@ -267,7 +301,7 @@
             // 
             // trackBarMsDelay
             // 
-            this.trackBarMsDelay.Location = new System.Drawing.Point(90, 54);
+            this.trackBarMsDelay.Location = new System.Drawing.Point(90, 48);
             this.trackBarMsDelay.Maximum = 6000;
             this.trackBarMsDelay.Name = "trackBarMsDelay";
             this.trackBarMsDelay.Size = new System.Drawing.Size(277, 45);
@@ -286,10 +320,10 @@
             this.gbNewAwake.Controls.Add(this.btnApplyAwake);
             this.gbNewAwake.Location = new System.Drawing.Point(553, 174);
             this.gbNewAwake.Name = "gbNewAwake";
-            this.gbNewAwake.Size = new System.Drawing.Size(234, 127);
+            this.gbNewAwake.Size = new System.Drawing.Size(212, 119);
             this.gbNewAwake.TabIndex = 6;
             this.gbNewAwake.TabStop = false;
-            this.gbNewAwake.Text = "New Awake";
+            this.gbNewAwake.Text = "𝑵𝒆𝒘 𝑨𝒘𝒂𝒌𝒆";
             this.gbNewAwake.Visible = false;
             // 
             // lblAwakeValue
@@ -297,18 +331,18 @@
             this.lblAwakeValue.AutoSize = true;
             this.lblAwakeValue.Location = new System.Drawing.Point(13, 61);
             this.lblAwakeValue.Name = "lblAwakeValue";
-            this.lblAwakeValue.Size = new System.Drawing.Size(37, 13);
+            this.lblAwakeValue.Size = new System.Drawing.Size(41, 13);
             this.lblAwakeValue.TabIndex = 8;
-            this.lblAwakeValue.Text = "Value:";
+            this.lblAwakeValue.Text = "𝑽𝒂𝒍𝒖𝒆:";
             // 
             // lblAwakeType
             // 
             this.lblAwakeType.AutoSize = true;
             this.lblAwakeType.Location = new System.Drawing.Point(13, 26);
             this.lblAwakeType.Name = "lblAwakeType";
-            this.lblAwakeType.Size = new System.Drawing.Size(34, 13);
+            this.lblAwakeType.Size = new System.Drawing.Size(37, 13);
             this.lblAwakeType.TabIndex = 8;
-            this.lblAwakeType.Text = "Type:";
+            this.lblAwakeType.Text = "𝑻𝒚𝒑𝒆:";
             // 
             // numericAwakeValue
             // 
@@ -319,7 +353,7 @@
             0,
             0});
             this.numericAwakeValue.Name = "numericAwakeValue";
-            this.numericAwakeValue.Size = new System.Drawing.Size(147, 20);
+            this.numericAwakeValue.Size = new System.Drawing.Size(129, 20);
             this.numericAwakeValue.TabIndex = 7;
             // 
             // cbAwakeType
@@ -328,16 +362,16 @@
             this.cbAwakeType.FormattingEnabled = true;
             this.cbAwakeType.Location = new System.Drawing.Point(66, 23);
             this.cbAwakeType.Name = "cbAwakeType";
-            this.cbAwakeType.Size = new System.Drawing.Size(147, 21);
+            this.cbAwakeType.Size = new System.Drawing.Size(129, 21);
             this.cbAwakeType.TabIndex = 0;
             // 
             // btnApplyAwake
             // 
-            this.btnApplyAwake.Location = new System.Drawing.Point(137, 93);
+            this.btnApplyAwake.Location = new System.Drawing.Point(126, 90);
             this.btnApplyAwake.Name = "btnApplyAwake";
-            this.btnApplyAwake.Size = new System.Drawing.Size(75, 23);
+            this.btnApplyAwake.Size = new System.Drawing.Size(69, 23);
             this.btnApplyAwake.TabIndex = 5;
-            this.btnApplyAwake.Text = "Add";
+            this.btnApplyAwake.Text = "𝑨𝒅𝒅";
             this.btnApplyAwake.UseVisualStyleBackColor = true;
             this.btnApplyAwake.Click += new System.EventHandler(this.btnApplyAwake_Click);
             // 
@@ -410,7 +444,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 63);
+            this.label2.Location = new System.Drawing.Point(11, 57);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 1;
@@ -440,6 +474,7 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.debugToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -484,6 +519,21 @@
             this.configDirectoryToolStripMenuItem1.Size = new System.Drawing.Size(161, 22);
             this.configDirectoryToolStripMenuItem1.Text = "Config Directory";
             this.configDirectoryToolStripMenuItem1.Click += new System.EventHandler(this.configDirectoryToolStripMenuItem1_Click);
+            // 
+            // debugToolStripMenuItem
+            // 
+            this.debugToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.imageProcessingToolStripMenuItem});
+            this.debugToolStripMenuItem.Name = "debugToolStripMenuItem";
+            this.debugToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.debugToolStripMenuItem.Text = "Debug";
+            // 
+            // imageProcessingToolStripMenuItem
+            // 
+            this.imageProcessingToolStripMenuItem.Name = "imageProcessingToolStripMenuItem";
+            this.imageProcessingToolStripMenuItem.Size = new System.Drawing.Size(209, 22);
+            this.imageProcessingToolStripMenuItem.Text = "Image Processing Sidebar";
+            this.imageProcessingToolStripMenuItem.Click += new System.EventHandler(this.imageProcessingToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -575,13 +625,113 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.08";
+            this.label8.Text = "Version: 1.09";
+            // 
+            // TabControlDebugImageProcessing
+            // 
+            this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage1);
+            this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage2);
+            this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage3);
+            this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage4);
+            this.TabControlDebugImageProcessing.Location = new System.Drawing.Point(816, 28);
+            this.TabControlDebugImageProcessing.Name = "TabControlDebugImageProcessing";
+            this.TabControlDebugImageProcessing.SelectedIndex = 0;
+            this.TabControlDebugImageProcessing.Size = new System.Drawing.Size(440, 386);
+            this.TabControlDebugImageProcessing.TabIndex = 5;
+            // 
+            // TabControlDebugImageProcessingPage1
+            // 
+            this.TabControlDebugImageProcessingPage1.Controls.Add(this.PictureBoxDebug1);
+            this.TabControlDebugImageProcessingPage1.Location = new System.Drawing.Point(4, 22);
+            this.TabControlDebugImageProcessingPage1.Name = "TabControlDebugImageProcessingPage1";
+            this.TabControlDebugImageProcessingPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.TabControlDebugImageProcessingPage1.Size = new System.Drawing.Size(432, 360);
+            this.TabControlDebugImageProcessingPage1.TabIndex = 0;
+            this.TabControlDebugImageProcessingPage1.Text = "Step 1";
+            this.TabControlDebugImageProcessingPage1.UseVisualStyleBackColor = true;
+            // 
+            // PictureBoxDebug1
+            // 
+            this.PictureBoxDebug1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PictureBoxDebug1.Location = new System.Drawing.Point(6, 6);
+            this.PictureBoxDebug1.Name = "PictureBoxDebug1";
+            this.PictureBoxDebug1.Size = new System.Drawing.Size(420, 348);
+            this.PictureBoxDebug1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBoxDebug1.TabIndex = 0;
+            this.PictureBoxDebug1.TabStop = false;
+            // 
+            // TabControlDebugImageProcessingPage2
+            // 
+            this.TabControlDebugImageProcessingPage2.Controls.Add(this.PictureBoxDebug2);
+            this.TabControlDebugImageProcessingPage2.Location = new System.Drawing.Point(4, 22);
+            this.TabControlDebugImageProcessingPage2.Name = "TabControlDebugImageProcessingPage2";
+            this.TabControlDebugImageProcessingPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.TabControlDebugImageProcessingPage2.Size = new System.Drawing.Size(432, 360);
+            this.TabControlDebugImageProcessingPage2.TabIndex = 1;
+            this.TabControlDebugImageProcessingPage2.Text = "Step 2";
+            this.TabControlDebugImageProcessingPage2.UseVisualStyleBackColor = true;
+            // 
+            // PictureBoxDebug2
+            // 
+            this.PictureBoxDebug2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PictureBoxDebug2.Location = new System.Drawing.Point(6, 6);
+            this.PictureBoxDebug2.Name = "PictureBoxDebug2";
+            this.PictureBoxDebug2.Size = new System.Drawing.Size(420, 348);
+            this.PictureBoxDebug2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBoxDebug2.TabIndex = 1;
+            this.PictureBoxDebug2.TabStop = false;
+            // 
+            // TabControlDebugImageProcessingPage3
+            // 
+            this.TabControlDebugImageProcessingPage3.Controls.Add(this.PictureBoxDebug3);
+            this.TabControlDebugImageProcessingPage3.Location = new System.Drawing.Point(4, 22);
+            this.TabControlDebugImageProcessingPage3.Name = "TabControlDebugImageProcessingPage3";
+            this.TabControlDebugImageProcessingPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.TabControlDebugImageProcessingPage3.Size = new System.Drawing.Size(432, 360);
+            this.TabControlDebugImageProcessingPage3.TabIndex = 2;
+            this.TabControlDebugImageProcessingPage3.Text = "Step 3";
+            this.TabControlDebugImageProcessingPage3.UseVisualStyleBackColor = true;
+            // 
+            // PictureBoxDebug3
+            // 
+            this.PictureBoxDebug3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PictureBoxDebug3.Location = new System.Drawing.Point(6, 6);
+            this.PictureBoxDebug3.Name = "PictureBoxDebug3";
+            this.PictureBoxDebug3.Size = new System.Drawing.Size(420, 348);
+            this.PictureBoxDebug3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBoxDebug3.TabIndex = 1;
+            this.PictureBoxDebug3.TabStop = false;
+            // 
+            // TabControlDebugImageProcessingPage4
+            // 
+            this.TabControlDebugImageProcessingPage4.Controls.Add(this.PictureBoxDebug4);
+            this.TabControlDebugImageProcessingPage4.Location = new System.Drawing.Point(4, 22);
+            this.TabControlDebugImageProcessingPage4.Name = "TabControlDebugImageProcessingPage4";
+            this.TabControlDebugImageProcessingPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.TabControlDebugImageProcessingPage4.Size = new System.Drawing.Size(432, 360);
+            this.TabControlDebugImageProcessingPage4.TabIndex = 3;
+            this.TabControlDebugImageProcessingPage4.Text = "Step 4";
+            this.TabControlDebugImageProcessingPage4.UseVisualStyleBackColor = true;
+            // 
+            // PictureBoxDebug4
+            // 
+            this.PictureBoxDebug4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PictureBoxDebug4.Location = new System.Drawing.Point(6, 6);
+            this.PictureBoxDebug4.Name = "PictureBoxDebug4";
+            this.PictureBoxDebug4.Size = new System.Drawing.Size(420, 348);
+            this.PictureBoxDebug4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBoxDebug4.TabIndex = 2;
+            this.PictureBoxDebug4.TabStop = false;
+            this.PictureBoxDebug4.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBoxDebug4_MouseDown);
+            this.PictureBoxDebug4.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBoxDebug4_MouseMove);
+            this.PictureBoxDebug4.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBoxDebug4_MouseUp);
             // 
             // AwakeBotUserInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(815, 548);
+            this.Controls.Add(this.TabControlDebugImageProcessing);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label6);
@@ -605,6 +755,19 @@
             this.menuStrip1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.TabControlDebugImageProcessing.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage1.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug1)).EndInit();
+            this.TabControlDebugImageProcessingPage2.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug2)).EndInit();
+            this.TabControlDebugImageProcessingPage3.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug3)).EndInit();
+            this.TabControlDebugImageProcessingPage4.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -660,5 +823,17 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ToolStripMenuItem howToUseToolStripMenuItem;
+        public System.Windows.Forms.CheckBox cbSupportAugmentation;
+        private System.Windows.Forms.ToolStripMenuItem debugToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem imageProcessingToolStripMenuItem;
+        private System.Windows.Forms.TabControl TabControlDebugImageProcessing;
+        private System.Windows.Forms.TabPage TabControlDebugImageProcessingPage1;
+        private System.Windows.Forms.TabPage TabControlDebugImageProcessingPage2;
+        private System.Windows.Forms.TabPage TabControlDebugImageProcessingPage3;
+        public System.Windows.Forms.PictureBox PictureBoxDebug1;
+        public System.Windows.Forms.PictureBox PictureBoxDebug2;
+        public System.Windows.Forms.PictureBox PictureBoxDebug3;
+        private System.Windows.Forms.TabPage TabControlDebugImageProcessingPage4;
+        public System.Windows.Forms.PictureBox PictureBoxDebug4;
     }
 }

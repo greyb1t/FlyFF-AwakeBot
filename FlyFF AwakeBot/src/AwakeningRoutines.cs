@@ -5,8 +5,10 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace FlyFF_AwakeBot.src {
-    class AwakeningRoutines {
+namespace FlyFF_AwakeBot.src
+{
+    class AwakeningRoutines
+    {
         private Point ItemPosition { get; set; }
         private Point AwakeScrollPosition { get; set; }
         private Point ReversionPosition { get; set; }
@@ -16,7 +18,10 @@ namespace FlyFF_AwakeBot.src {
         private AwakeBotUserInterface Ui { get; }
         private List<Awake> PreferredAwakes;
 
-        public AwakeningRoutines(AwakeBotUserInterface ui, Point itemPosition, Point awakeScollPosition, Point reversionPosition, Rectangle inventoryRectangle, ServerConfigManager awakeManager) {
+        public AwakeningRoutines(AwakeBotUserInterface ui, Point itemPosition, 
+            Point awakeScollPosition, Point reversionPosition, Rectangle inventoryRectangle, 
+            ServerConfigManager awakeManager)
+        {
             Ui = ui;
 
             ItemPosition = itemPosition;
@@ -32,8 +37,10 @@ namespace FlyFF_AwakeBot.src {
         /// </summary>
         /// <param name="control"></param>
         /// <param name="text"></param>
-        public void CrossThreadChangeControlText(Control control, string text) {
-            control.Parent.Invoke(new Action(() => {
+        public void CrossThreadChangeControlText(Control control, string text)
+        {
+            control.Parent.Invoke(new Action(() =>
+            {
                 control.Text = text;
             }));
         }
@@ -42,10 +49,12 @@ namespace FlyFF_AwakeBot.src {
         /// Appends text to the log box from any thread.
         /// </summary>
         /// <param name="message"></param>
-        public void CrossThreadAppendLog(string message) {
+        public void CrossThreadAppendLog(string message)
+        {
             string currentTime = DateTime.Now.ToString("[HH:mm:ss] ");
 
-            Ui.Invoke(new Action(() => {
+            Ui.Invoke(new Action(() =>
+            {
                 Ui.tbLog.AppendText(currentTime + message);
             }));
         }
@@ -53,8 +62,10 @@ namespace FlyFF_AwakeBot.src {
         /// <summary>
         /// Turn the bot on or off.
         /// </summary>
-        public void ToggleBotStatus() {
-            if (IsStopped()) {
+        public void ToggleBotStatus()
+        {
+            if (IsStopped())
+            {
                 PreferredAwakes = AwakeningParser.GetPreferredAwakes(Ui.lviAwakes);
 
                 Thread panicThread = new Thread(() => PanicKeyThread());
@@ -65,7 +76,8 @@ namespace FlyFF_AwakeBot.src {
 
                 CrossThreadChangeControlText(Ui.btnStartBot, "Stop");
             }
-            else {
+            else
+            {
                 CrossThreadChangeControlText(Ui.btnStartBot, "Start");
             }
         }
@@ -74,124 +86,166 @@ namespace FlyFF_AwakeBot.src {
         /// Executes the bot's awakening routine.
         /// </summary>
         /// <param name="preferredAwakes"></param>
-        private void AwakeningLoopThread(List<Awake> preferredAwakes) {
-            CrossThreadAppendLog("Bot has started\n");
+        private void AwakeningLoopThread(List<Awake> preferredAwakes)
+        {
+            try
+            {
+                CrossThreadAppendLog("Bot has started\n");
 
-            Win32API.SetForegroundWindow(Ui.Process.Handle);
+                Win32API.SetForegroundWindow(Ui.Process.Handle);
 
-            while (true) {
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
+                using (AwakeningResolver awakeResolver = new AwakeningResolver(ConfigManager, this))
+                {
+                    while (true)
+                    {
+                        Stopwatch stopWatch = new Stopwatch();
+                        stopWatch.Start();
 
-                // Hover over the item to check the awake
-                BotHelper.SetCursorPosition(ItemPosition);
+                        // Hover over the item to check the awake
+                        BotHelper.SetCursorPosition(ItemPosition);
 
-                using (AwakeningResolver awakeResolver = new AwakeningResolver(ConfigManager, this)) {
+                        if (IsStopped())
+                            break;
 
-                    if (IsStopped())
-                        break;
+                        // Add specified delay to compensate for laggy server
+                        int msValue = 0;
 
-                    // Add specified delay to compensate for laggy server
-                    int msValue = 0;
+                        Ui.Invoke(new Action(() =>
+                        {
+                            msValue = Ui.trackBarMsDelay.Value;
+                        }));
 
-                    Ui.Invoke(new Action(() => {
-                        msValue = Ui.trackBarMsDelay.Value;
-                    }));
+                        Thread.Sleep(msValue);
 
-                    Thread.Sleep(msValue);
+                        Bitmap bmp = awakeResolver.SnapshotRectangle(InventoryRectangle);
 
-                    Bitmap bmp = awakeResolver.SnapshotRectangle(InventoryRectangle);
-                    bmp = awakeResolver.DifferentiateAwakeText(bmp);
-                    bmp = awakeResolver.IncreaseBitmapSize(bmp, 300);
-                    bmp = awakeResolver.CropBitmapSmart(bmp);
-                    string awakeText = awakeResolver.GetAwakening(bmp);
+                        // bmp.Save("1.bmp");
 
-                    AwakeningParser awakeParser = new AwakeningParser(Ui, ConfigManager, awakeText);
-                    List<Awake> itemAwakes = awakeParser.GetCompletedAwakes();
+                        Ui.Invoke(new Action(() =>
+                        {
+                            Ui.PictureBoxDebug1.Image = (Image)bmp.Clone();
+                        }));
 
-                    string awakeAchieved = "";
+                        bmp = awakeResolver.DifferentiateAwakeText(bmp);
+                        // bmp.Save("2.bmp");
 
-                    for (int i = 0; i < itemAwakes.Count; ++i)
-                        awakeAchieved += itemAwakes[i].ToString() + (i == (itemAwakes.Count - 1) ? "" : " | ");
+                        Ui.Invoke(new Action(() =>
+                        {
+                            Ui.PictureBoxDebug2.Image = (Image)bmp.Clone();
+                        }));
 
-                    if (awakeAchieved.Length <= 0) {
-                        awakeAchieved = "No awake found\n";
+                        bmp = awakeResolver.CropBitmapSmart(bmp);
+                        // bmp.Save("3.bmp");
+
+                        Ui.Invoke(new Action(() =>
+                        {
+                            Ui.PictureBoxDebug3.Image = (Image)bmp.Clone();
+                        }));
+
+                        bmp = awakeResolver.IncreaseBitmapSize(bmp, 300);
+                        // bmp.Save("4.bmp");
+
+                        Ui.Invoke(new Action(() =>
+                        {
+                            Ui.PictureBoxDebug4.Image = (Image)bmp.Clone();
+                        }));
+
+                        string awakeText = awakeResolver.GetAwakening(bmp);
+
+                        AwakeningParser awakeParser = new AwakeningParser(Ui, ConfigManager, awakeText);
+                        List<Awake> itemAwakes = awakeParser.GetCompletedAwakes();
+
+                        string awakeAchieved = "";
+
+                        for (int i = 0; i < itemAwakes.Count; ++i)
+                            awakeAchieved += itemAwakes[i].ToString() + (i == (itemAwakes.Count - 1) ? "" : " | ");
+
+                        if (awakeAchieved.Length <= 0)
+                        {
+                            awakeAchieved = "No awake found\n";
+                            CrossThreadAppendLog(awakeAchieved + "\n");
+                        }
+
                         CrossThreadAppendLog(awakeAchieved + "\n");
-                    }
 
-                    CrossThreadAppendLog(awakeAchieved + "\n");
+                        // Check if awake meets the requirements
+                        if (AwakeMeetsRequirements(itemAwakes, preferredAwakes))
+                        {
+                            CrossThreadAppendLog("Preferred awake was successfully achieved\n");
 
-                    // Check if awake meets the requirements
-                    if (AwakeMeetsRequirements(itemAwakes, preferredAwakes)) {
+                            stopWatch.Stop();
+                            CrossThreadChangeControlText(Ui.lblIterationTime, stopWatch.ElapsedMilliseconds.ToString() + " ms");
+                            CrossThreadChangeControlText(Ui.lblTotalTries, (Convert.ToInt32(Ui.lblTotalTries.Text) + 1).ToString());
 
-                        CrossThreadAppendLog("Preferred awake was successfully achieved\n");
+                            break;
+                        }
+
+                        CrossThreadAppendLog("Preferred awake was not achieved\n");
+
+                        // Doubleclick reversion scroll
+                        BotHelper.SimulateMouseClick(Ui.Process.Handle, ReversionPosition);
+                        BotHelper.SimulateMouseClick(Ui.Process.Handle, ReversionPosition);
+
+                        int ms = 200;
+
+                        Thread.Sleep(ms);
+
+                        // Click item with reversion
+                        BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
+
+                        // Wait until the reversion is done on the item
+                        Thread.Sleep(ConfigManager.ScrollDelay);
+
+                        // Doubleclick awake scroll
+                        BotHelper.SimulateMouseClick(Ui.Process.Handle, AwakeScrollPosition);
+
+                        if (!Ui.cbSupportAugmentation.Checked)
+                            BotHelper.SimulateMouseClick(Ui.Process.Handle, AwakeScrollPosition);
+
+                        Thread.Sleep(ms);
+
+                        // Click item with awake scroll
+                        BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
+
+                        Thread.Sleep(ms);
+
+                        BotHelper.SetCursorPosition(new Point(ItemPosition.X + 200, ItemPosition.Y + 200));
+                        Thread.Sleep(ms);
+                        BotHelper.SetCursorPosition(ItemPosition);
+
+                        // Wait until the awake is done on the item
+                        Thread.Sleep(ConfigManager.ScrollDelay);
+
+                        bmp.Dispose();
+
+                        if (IsStopped())
+                            break;
 
                         stopWatch.Stop();
                         CrossThreadChangeControlText(Ui.lblIterationTime, stopWatch.ElapsedMilliseconds.ToString() + " ms");
                         CrossThreadChangeControlText(Ui.lblTotalTries, (Convert.ToInt32(Ui.lblTotalTries.Text) + 1).ToString());
-
-                        break;
                     }
-
-                    CrossThreadAppendLog("Preferred awake was not achieved\n");
-
-                    // Doubleclick reversion scroll
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, ReversionPosition);
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, ReversionPosition);
-
-                    int ms = 200;
-
-                    Thread.Sleep(ms);
-
-                    // Click item with reversion
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
-
-                    // Wait until the reversion is done on the item
-                    Thread.Sleep(ConfigManager.ScrollDelay);
-
-                    // Doubleclick awake scroll
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, AwakeScrollPosition);
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, AwakeScrollPosition);
-
-                    Thread.Sleep(ms);
-
-                    // Click item with awake scroll
-                    BotHelper.SimulateMouseClick(Ui.Process.Handle, ItemPosition);
-
-                    //// Wait until the awake is done on the item
-                    //Thread.Sleep(ConfigManager.ScrollDelay);
-                    Thread.Sleep(ms);
-
-                    BotHelper.SetCursorPosition(new Point(ItemPosition.X + 200, ItemPosition.Y + 200));
-                    Thread.Sleep(ms);
-                    BotHelper.SetCursorPosition(ItemPosition);
-
-                    // Wait until the awake is done on the item
-                    Thread.Sleep(ConfigManager.ScrollDelay);
-
-                    bmp.Dispose();
-
-                    if (IsStopped())
-                        break;
                 }
 
-                stopWatch.Stop();
-                CrossThreadChangeControlText(Ui.lblIterationTime, stopWatch.ElapsedMilliseconds.ToString() + " ms");
-                CrossThreadChangeControlText(Ui.lblTotalTries, (Convert.ToInt32(Ui.lblTotalTries.Text) + 1).ToString());
+                CrossThreadChangeControlText(Ui.btnStartBot, "Start");
+
+                CrossThreadAppendLog("Bot has finished\n");
             }
-
-            CrossThreadChangeControlText(Ui.btnStartBot, "Start");
-
-            CrossThreadAppendLog("Bot has finished\n");
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         /// <summary>
         /// Checks whether the END key is down to turn the bot off.
         /// </summary>
-        private void PanicKeyThread() {
+        private void PanicKeyThread()
+        {
             CrossThreadAppendLog("Panic key thread started\n");
 
-            while (true) {
+            while (true)
+            {
 
                 if (BotHelper.IsKeyDown(System.Windows.Forms.Keys.End))
                     ToggleBotStatus();
@@ -210,10 +264,22 @@ namespace FlyFF_AwakeBot.src {
         /// </summary>
         /// <param name="awakes"></param>
         /// <returns></returns>
-        List<Awake> CombineEqualAwakes(List<Awake> awakes) {
-            for (int i = 0; i < awakes.Count; ++i) {
-                for (int j = 0; j < awakes.Count; ++j) {
-                    if (awakes[i].TypeIndex == awakes[j].TypeIndex && i != j) {
+        List<Awake> CombineEqualAwakes(List<Awake> awakes)
+        {
+            // For each of the awakes
+            for (int i = 0; i < awakes.Count; ++i)
+            {
+
+                // Go through all of the awakes for each of the awakes
+                for (int j = 0; j < awakes.Count; ++j)
+                {
+
+                    if (i >= awakes.Count)
+                        return awakes;
+
+                    // Does the awake type match the i awake?
+                    if (awakes[i].TypeIndex == awakes[j].TypeIndex && i != j)
+                    {
                         awakes[i].Value += awakes[j].Value;
                         awakes.RemoveAt(j);
                     }
@@ -229,18 +295,22 @@ namespace FlyFF_AwakeBot.src {
         /// <param name="itemAwakes"></param>
         /// <param name="preferredAwakes"></param>
         /// <returns></returns>
-        private bool AwakeMeetsRequirements(List<Awake> itemAwakes, List<Awake> preferredAwakes) {
+        private bool AwakeMeetsRequirements(List<Awake> itemAwakes, List<Awake> preferredAwakes)
+        {
             itemAwakes = CombineEqualAwakes(itemAwakes);
             preferredAwakes = CombineEqualAwakes(preferredAwakes);
 
             bool[] preferredAwakeRequirements = new bool[preferredAwakes.Count];
 
-            for (int i = 0; i < preferredAwakes.Count; ++i) {
-                
-                for (int j = 0; j < itemAwakes.Count; ++j) {
+            for (int i = 0; i < preferredAwakes.Count; ++i)
+            {
 
-                    if (preferredAwakes[i].TypeIndex == itemAwakes[j].TypeIndex && 
-                        itemAwakes[j].Value >= preferredAwakes[i].Value) {
+                for (int j = 0; j < itemAwakes.Count; ++j)
+                {
+
+                    if (preferredAwakes[i].TypeIndex == itemAwakes[j].TypeIndex &&
+                        itemAwakes[j].Value >= preferredAwakes[i].Value)
+                    {
                         preferredAwakeRequirements[i] = true;
                     }
 
@@ -248,7 +318,8 @@ namespace FlyFF_AwakeBot.src {
 
             }
 
-            foreach (bool req in preferredAwakeRequirements) {
+            foreach (bool req in preferredAwakeRequirements)
+            {
                 if (!req)
                     return false;
             }
@@ -256,9 +327,11 @@ namespace FlyFF_AwakeBot.src {
             return true;
         }
 
-        public bool IsStopped() {
+        public bool IsStopped()
+        {
             if (Ui.btnStartBot.Text == "Start")
                 return true;
+
             return false;
         }
     }

@@ -3,19 +3,23 @@ using System.Collections.Generic;
 using FlyFF_AwakeBot.Utils;
 using System.Windows.Forms;
 
-namespace FlyFF_AwakeBot.src {
-    class AwakeningParser {
+namespace FlyFF_AwakeBot.src
+{
+    class AwakeningParser
+    {
         private ServerConfigManager AwakeManager { get; }
         private string AwakeString { get; set; }
         private AwakeBotUserInterface Ui { get; }
 
-        public AwakeningParser(AwakeBotUserInterface ui, ServerConfigManager awakeManager, string awake) {
+        public AwakeningParser(AwakeBotUserInterface ui, ServerConfigManager awakeManager, string awake)
+        {
             Ui = ui;
             AwakeManager = awakeManager;
             AwakeString = awake;
         }
-        
-        private bool IsValidAwakeLine(string awake) {
+
+        private bool IsValidAwakeLine(string awake)
+        {
             return StringUtils.ContainsPlusOrMinus(awake) &&
                 StringUtils.ContainsNumber(awake) &&
                 StringUtils.ContainsLetters(awake) &&
@@ -26,19 +30,23 @@ namespace FlyFF_AwakeBot.src {
         /// Splits a string or multiple awakes into a list of awakes.
         /// </summary>
         /// <returns></returns>
-        private List<Awake> SplitAwakeLines() {
+        private List<Awake> SplitAwakeLines()
+        {
             List<Awake> awakes = new List<Awake>();
 
             int index;
             int lastIndex = 0;
 
-            do {
+            do
+            {
                 index = AwakeString.IndexOf('\n', lastIndex);
 
-                if (index != -1) {
+                if (index != -1)
+                {
                     string awakeText = AwakeString.Substring(lastIndex, index - lastIndex);
 
-                    if ((!StringUtils.ContainsNumber(awakeText) || !StringUtils.ContainsPlusOrMinus(awakeText)) && awakeText.Length != 0) {
+                    if ((!StringUtils.ContainsNumber(awakeText) || !StringUtils.ContainsPlusOrMinus(awakeText)) && awakeText.Length != 0)
+                    {
                         index = AwakeString.IndexOf('\n', index + 1);
                         awakeText = AwakeString.Substring(lastIndex, index - lastIndex);
                         awakeText = StringUtils.StripAllNewlines(awakeText);
@@ -60,10 +68,12 @@ namespace FlyFF_AwakeBot.src {
         /// </summary>
         /// <param name="awake"></param>
         /// <returns></returns>
-        private string DetermineAwakeName(string awake) {
+        private string DetermineAwakeName(string awake)
+        {
             short? awakeTypeIndex = DetermineAwakeType(awake);
 
-            foreach (var awakeType in AwakeManager.AwakeTypes) {
+            foreach (var awakeType in AwakeManager.AwakeTypes)
+            {
                 if (awakeType.TypeIndex == awakeTypeIndex)
                     return awakeType.Name;
             }
@@ -76,10 +86,12 @@ namespace FlyFF_AwakeBot.src {
         /// </summary>
         /// <param name="awake"></param>
         /// <returns></returns>
-        private int? ParseAwakeValue(string awake) {
-
-            for (int i = 0; i < awake.Length; ++i) {
-                if (awake[i] == '+') {
+        private int? ParseAwakeValue(string awake)
+        {
+            for (int i = 0; i < awake.Length; ++i)
+            {
+                if (awake[i] == '+')
+                {
                     string val = awake.Substring(i + 1, awake.Length - i - 1);
 
                     while (!StringUtils.IsPureNumber(val))
@@ -87,7 +99,8 @@ namespace FlyFF_AwakeBot.src {
 
                     return Convert.ToInt32(val);
                 }
-                else if (awake[i] == '-') {
+                else if (awake[i] == '-')
+                {
                     string val = awake.Substring(i + 1, awake.Length - i - 1);
 
                     while (!StringUtils.IsPureNumber(val))
@@ -100,21 +113,29 @@ namespace FlyFF_AwakeBot.src {
             return null;
         }
 
-        private int GetPlusOrMinusIndex(string awake) {
-            for (int i = 0; i < awake.Length; ++i) {
-                if (awake[i] == '+') {
-                    if (!Char.IsWhiteSpace(awake[i - 1])) {
+        private int GetPlusOrMinusIndex(string awake)
+        {
+            for (int i = 0; i < awake.Length; ++i)
+            {
+                if (awake[i] == '+')
+                {
+                    if (!Char.IsWhiteSpace(awake[i - 1]))
+                    {
                         return i + 1;
                     }
-                    else {
+                    else
+                    {
                         return i;
                     }
                 }
-                else if (awake[i] == '-') {
-                    if (!Char.IsWhiteSpace(awake[i - 1])) {
+                else if (awake[i] == '-')
+                {
+                    if (!Char.IsWhiteSpace(awake[i - 1]))
+                    {
                         return i + 1;
                     }
-                    else {
+                    else
+                    {
                         return i;
                     }
                 }
@@ -128,10 +149,10 @@ namespace FlyFF_AwakeBot.src {
         /// </summary>
         /// <param name="awake"></param>
         /// <returns></returns>
-        private short? DetermineAwakeType(string awake) {
-            
-            for (short i = 0; i < AwakeManager.AwakeTypes.Count; ++i) {
-
+        public short? DetermineAwakeType(string awake)
+        {
+            for (short i = 0; i < AwakeManager.AwakeTypes.Count; ++i)
+            {
                 int plusMinusIndex = GetPlusOrMinusIndex(awake);
 
                 if (plusMinusIndex != -1)
@@ -148,10 +169,12 @@ namespace FlyFF_AwakeBot.src {
         /// Parses all the awakes and outputs them into a list of parsed awakes.
         /// </summary>
         /// <returns></returns>
-        public List<Awake> GetCompletedAwakes() {
+        public List<Awake> GetCompletedAwakes()
+        {
             List<Awake> awakes = SplitAwakeLines();
 
-            for (int i = 0; i < awakes.Count; ++i) {
+            for (int i = 0; i < awakes.Count; ++i)
+            {
                 awakes[i].Name = DetermineAwakeName(awakes[i].Text);
                 awakes[i].TypeIndex = DetermineAwakeType(awakes[i].Text);
                 awakes[i].Value = ParseAwakeValue(awakes[i].Text);
@@ -164,14 +187,16 @@ namespace FlyFF_AwakeBot.src {
         /// Gets the preferred awakes from the listview.
         /// </summary>
         /// <returns></returns>
-        public static List<Awake> GetPreferredAwakes(ListView lvi) {
+        public static List<Awake> GetPreferredAwakes(ListView lvi)
+        {
             List<Awake> preferredAwakes = new List<Awake>();
 
-            for (int i = 0; i < lvi.Items.Count; ++i) {
-
+            for (int i = 0; i < lvi.Items.Count; ++i)
+            {
                 Awake awake = new Awake();
 
-                for (int j = 0; j < lvi.Items[i].SubItems.Count; ++j) {
+                for (int j = 0; j < lvi.Items[i].SubItems.Count; ++j)
+                {
 
                     string subitemValue = lvi.Items[i].SubItems[j].Text;
 
