@@ -2,6 +2,7 @@
 Flyff Awakebot is a software designed to do the awakening for you!
 
 ![alt text](https://i.epvpimg.com/1zZQg.png "Logo Title Text 1")
+
 [Usage Video](https://www.youtube.com/watch?v=15anXFvMVNs "flyff bot video")
 
 # Features!
