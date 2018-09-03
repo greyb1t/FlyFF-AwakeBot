@@ -1,6 +1,18 @@
-# FlyFF-AwakeBot
-A customizable awakebot for FlyFF by greyb1t.
+# Flyff Awakebot
+Flyff Awakebot is a software designed to do the awakening for you!
 
-Epvp Thread: http://www.elitepvpers.com/forum/flyff-hacks-bots-cheats-exploits-macros/4139263-flyff-awakebot-customizable-support-your-own-server.html
+![alt text](https://i.epvpimg.com/1zZQg.png "Logo Title Text 1")
+[Usage Video](https://www.youtube.com/watch?v=15anXFvMVNs "flyff bot video")
 
-Website: http://flyffbot.com
+# Features!
+
+  - Customizability - Support almost any server
+  - User-friendly
+  - Completely automated by simulated clicks
+  - Open source
+  
+# How it works
+  - Takes an image of the awake
+  - Does some simple image processing on the image of the awake
+  - Uses Tesseract OCR to convert the awake text of the image to stringified text
+  - Parses the text and determines what awakes and values based on a config for the specified server
