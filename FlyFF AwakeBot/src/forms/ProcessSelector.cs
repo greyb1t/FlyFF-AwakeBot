@@ -72,7 +72,7 @@ namespace FlyFF_AwakeBot
 
             foreach (var process in processes)
             {
-                string[] processData = { process.ProcessName, process.Id.ToString() };
+                string[] processData = { process.ProcessName, process.Id.ToString(), process.MainWindowTitle };
                 var listViewItem = new ListViewItem(processData);
                 lviProcesses.Items.Add(listViewItem);
 

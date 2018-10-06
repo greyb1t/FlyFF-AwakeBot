@@ -63,10 +63,9 @@ namespace FlyFF_AwakeBot
         /// <returns></returns>
         unsafe static private bool EnumWindowsCallback(IntPtr hWindow, IntPtr lParam)
         {
-            uint procId;
-            Win32API.GetWindowThreadProcessId(hWindow, out procId);
+            Win32API.GetWindowThreadProcessId(hWindow, out uint procId);
 
-            EnumWindowProcess* windowProcess = (EnumWindowProcess*)lParam.ToPointer();
+            EnumWindowProcess *windowProcess = (EnumWindowProcess *)lParam.ToPointer();
 
             if (procId == windowProcess->processId)
             {

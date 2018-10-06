@@ -28,6 +28,7 @@
             this.lviProcesses = new System.Windows.Forms.ListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colWndTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
             // btnSelectProcess
@@ -44,7 +45,8 @@
             // 
             this.lviProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
-            this.colPid});
+            this.colPid,
+            this.colWndTitle});
             this.lviProcesses.FullRowSelect = true;
             this.lviProcesses.HideSelection = false;
             this.lviProcesses.Location = new System.Drawing.Point(12, 12);
@@ -58,12 +60,17 @@
             // colName
             // 
             this.colName.Text = "Name";
-            this.colName.Width = 251;
+            this.colName.Width = 97;
             // 
             // colPid
             // 
             this.colPid.Text = "PID";
-            this.colPid.Width = 269;
+            this.colPid.Width = 71;
+            // 
+            // colWndTitle
+            // 
+            this.colWndTitle.Text = "Window Title";
+            this.colWndTitle.Width = 352;
             // 
             // ProcessSelector
             // 
@@ -88,5 +95,6 @@
         private System.Windows.Forms.ListView lviProcesses;
         private System.Windows.Forms.ColumnHeader colName;
         private System.Windows.Forms.ColumnHeader colPid;
+        private System.Windows.Forms.ColumnHeader colWndTitle;
     }
 }

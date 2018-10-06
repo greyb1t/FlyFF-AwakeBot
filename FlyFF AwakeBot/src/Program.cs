@@ -16,32 +16,26 @@ namespace FlyFF_AwakeBot
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            string tessdataFolderName = "tessdata";
-            string tessdataDllName = "Tesseract.dll";
-            string tessdataXmlName = "Tesseract.xml";
-            string settingsFileName = "Settings.xml";
+            var requiredFiles = new string[] {
+                "Tesseract.dll",
+                "Tesseract.xml",
+                "Settings.xml",
+            };
+
+            foreach (var file in requiredFiles)
+            {
+                if (!File.Exists(file))
+                {
+                    ErrorFileMissing(file);
+                    return;
+                }
+            }
+
+            const string tessdataFolderName = "tessdata";
 
             if (!Directory.Exists(tessdataFolderName))
             {
                 ErrorFileMissing(tessdataFolderName);
-                return;
-            }
-
-            if (!File.Exists(tessdataDllName))
-            {
-                ErrorFileMissing(tessdataDllName);
-                return;
-            }
-
-            if (!File.Exists(tessdataXmlName))
-            {
-                ErrorFileMissing(tessdataXmlName);
-                return;
-            }
-
-            if (!File.Exists(settingsFileName))
-            {
-                ErrorFileMissing(settingsFileName);
                 return;
             }
 

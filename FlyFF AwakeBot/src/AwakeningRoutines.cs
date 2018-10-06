@@ -59,6 +59,14 @@ namespace FlyFF_AwakeBot.src
             }));
         }
 
+        public void CrossThreadUpdatePictureBox(PictureBox pb, Image image)
+        {
+            Ui.Invoke(new Action(() =>
+            {
+                pb.Image = (Image)image.Clone();
+            }));
+        }
+
         /// <summary>
         /// Turn the bot on or off.
         /// </summary>
@@ -119,36 +127,19 @@ namespace FlyFF_AwakeBot.src
 
                         Bitmap bmp = awakeResolver.SnapshotRectangle(InventoryRectangle);
 
-                        // bmp.Save("1.bmp");
-
-                        Ui.Invoke(new Action(() =>
-                        {
-                            Ui.PictureBoxDebug1.Image = (Image)bmp.Clone();
-                        }));
+                        CrossThreadUpdatePictureBox(Ui.PictureBoxDebug1, (Image)bmp.Clone());
 
                         bmp = awakeResolver.DifferentiateAwakeText(bmp);
-                        // bmp.Save("2.bmp");
 
-                        Ui.Invoke(new Action(() =>
-                        {
-                            Ui.PictureBoxDebug2.Image = (Image)bmp.Clone();
-                        }));
+                        CrossThreadUpdatePictureBox(Ui.PictureBoxDebug2, (Image)bmp.Clone());
 
                         bmp = awakeResolver.CropBitmapSmart(bmp);
-                        // bmp.Save("3.bmp");
 
-                        Ui.Invoke(new Action(() =>
-                        {
-                            Ui.PictureBoxDebug3.Image = (Image)bmp.Clone();
-                        }));
+                        CrossThreadUpdatePictureBox(Ui.PictureBoxDebug3, (Image)bmp.Clone());
 
                         bmp = awakeResolver.IncreaseBitmapSize(bmp, 300);
-                        // bmp.Save("4.bmp");
 
-                        Ui.Invoke(new Action(() =>
-                        {
-                            Ui.PictureBoxDebug4.Image = (Image)bmp.Clone();
-                        }));
+                        CrossThreadUpdatePictureBox(Ui.PictureBoxDebug4, (Image)bmp.Clone());
 
                         string awakeText = awakeResolver.GetAwakening(bmp);
 
@@ -246,7 +237,6 @@ namespace FlyFF_AwakeBot.src
 
             while (true)
             {
-
                 if (BotHelper.IsKeyDown(System.Windows.Forms.Keys.End))
                     ToggleBotStatus();
 
@@ -269,11 +259,9 @@ namespace FlyFF_AwakeBot.src
             // For each of the awakes
             for (int i = 0; i < awakes.Count; ++i)
             {
-
                 // Go through all of the awakes for each of the awakes
                 for (int j = 0; j < awakes.Count; ++j)
                 {
-
                     if (i >= awakes.Count)
                         return awakes;
 
@@ -304,18 +292,14 @@ namespace FlyFF_AwakeBot.src
 
             for (int i = 0; i < preferredAwakes.Count; ++i)
             {
-
                 for (int j = 0; j < itemAwakes.Count; ++j)
                 {
-
                     if (preferredAwakes[i].TypeIndex == itemAwakes[j].TypeIndex &&
                         itemAwakes[j].Value >= preferredAwakes[i].Value)
                     {
                         preferredAwakeRequirements[i] = true;
                     }
-
                 }
-
             }
 
             foreach (bool req in preferredAwakeRequirements)

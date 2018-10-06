@@ -197,7 +197,6 @@ namespace FlyFF_AwakeBot.src
 
                 for (int j = 0; j < lvi.Items[i].SubItems.Count; ++j)
                 {
-
                     string subitemValue = lvi.Items[i].SubItems[j].Text;
 
                     if (j == 0)

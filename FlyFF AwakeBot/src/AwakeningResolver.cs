@@ -9,7 +9,6 @@ using Tesseract;
 using System.Collections.Generic;
 using FlyFF_AwakeBot.src;
 using System.Linq;
-using System.IO;
 
 namespace FlyFF_AwakeBot
 {
@@ -419,6 +418,7 @@ namespace FlyFF_AwakeBot
             }
 
             bitmap = CropBitmap(bitmap, new Rectangle(left, 0, newWidth, bitmap.Height));
+
             return bitmap;
         }
     }

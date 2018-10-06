@@ -18,7 +18,6 @@ namespace FlyFF_AwakeBot.Utils
 
     class StringUtils
     {
-
         /// <summary>
         /// Check whether a whole string is only numbers.
         /// </summary>

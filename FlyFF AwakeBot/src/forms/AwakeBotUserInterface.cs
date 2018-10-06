@@ -235,7 +235,7 @@ namespace FlyFF_AwakeBot
             IsDebugSidebarVisible = !IsDebugSidebarVisible;
         }
 
-        private bool drag = false;
+        private bool isMouseDown = false;
         private int deltaX;
         private int deltaY;
 
@@ -244,7 +244,7 @@ namespace FlyFF_AwakeBot
             int newX = PictureBoxDebug4.Left + (e.X - deltaX);
             int newY = PictureBoxDebug4.Top + (e.Y - deltaY);
 
-            if (drag)
+            if (isMouseDown)
             {
                 PictureBoxDebug4.Left = newX;
                 PictureBoxDebug4.Top = newY;
@@ -255,12 +255,22 @@ namespace FlyFF_AwakeBot
         {
             deltaX = e.X;
             deltaY = e.Y;
-            drag = true;
+            isMouseDown = true;
         }
 
         private void PictureBoxDebug4_MouseUp(object sender, MouseEventArgs e)
         {
-            drag = false;
+            isMouseDown = false;
+        }
+
+        private void PictureBoxDebug4_MouseEnter(object sender, EventArgs e)
+        {
+            //Cursor.Current = Cursors.Hand;
+        }
+
+        private void PictureBoxDebug4_MouseLeave(object sender, EventArgs e)
+        {
+            //Cursor.Current = Cursors.Arrow;
         }
     }
 }

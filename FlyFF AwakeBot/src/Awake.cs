@@ -10,10 +10,7 @@
 
         public int? Value { get; set; }
 
-        public Awake()
-        {
-
-        }
+        public Awake() { }
 
         public Awake(string awakeText)
         {
@@ -29,8 +26,10 @@
 
         public static Awake Empty {
             get {
-                Awake awake = new Awake("", "", -1);
-                awake.Value = -1;
+                Awake awake = new Awake("", "", -1)
+                {
+                    Value = -1
+                };
                 return awake;
             }
         }
