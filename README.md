@@ -44,10 +44,10 @@ Visit the [elitepvpers thread](https://www.elitepvpers.com/forum/flyff-hacks-bot
 
 3. Add or change the server's custom awakes in the new .xml file. Many servers have quite equal awakes, but some needs to be changed.
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Attribute Explanation:**
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**name** = The name you'd like the awake type to be displayed inside of the bot.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**gametext** = The exact text of the specified awake inside of the game.
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Awake Type Example:
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**Attribute Explanation:**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**name** = The name you'd like the awake type to be displayed inside of the bot.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**gametext** = The exact text of the specified awake inside of the game.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Awake Type Example:  
 ```xml
 <Type name="ADOCH" gametext="Additional Damage of Critical Hits"></Type>
 ```
@@ -113,20 +113,20 @@ Format: R, G, B
 ```
 
 # FAQ
-Q: My server is not showing up in the "Process Selector".
-A: Make sure the name of the game's client is "Neuz.exe". If not, change the name of the process in Settings.xml
+Q: My server is not showing up in the "Process Selector".  
+A: Make sure the name of the game's client is "Neuz.exe". If not, change the name of the process in Settings.xml  
 ```xml
 <Setting name="ProcessName">Neuz</Setting>
 ```
 
-Q: The server is detecting it!
-A: Change the name of the folder containing the bot, the exe itself and the value of BotWindowName in Settings.xml
+Q: The server is detecting it!  
+A: Change the name of the folder containing the bot, the exe itself and the value of BotWindowName in Settings.xml  
 ```xml
 <Setting name="BotWindowName">greyb1t's Flyff Awakebot</Setting>
 ```
 
-Q: The server I'm playing on doesn't have scrolls. Only /awake command.
-A: Doesn't matter, just make the "Awake Pos" to the /awake command on the bottom bar in-game and "Reversion Pos" to an empty slot in the inventory.
+Q: The server I'm playing on doesn't have scrolls. Only /awake command.  
+A: Doesn't matter, just make the "Awake Pos" to the /awake command on the bottom bar in-game and "Reversion Pos" to an empty slot in the inventory.  
 
 # Known problems and solutions
 Error:
@@ -137,8 +137,8 @@ System.DllNotFoundException: Failed to find library "liblept172.dll" for platfor
 **Solution:** Uninstall (probably not required) VC 2015 Redist x64 and install x86 instead.
 
 # Requirements
-.NET Framework 4.6.1
-VC 2015 Redist x86 (x64 will not work)
+.NET Framework 4.6.1  
+VC 2015 Redist x86 (x64 will not work)  
 
 # Changelog
 **Version 1.01**
