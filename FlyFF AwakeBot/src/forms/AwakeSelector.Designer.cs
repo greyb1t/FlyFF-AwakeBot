@@ -36,13 +36,13 @@
             this.Name = "AwakeSelectionForm";
             this.Text = "Form1";
             this.TopMost = true;
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AwakeSelectionForm_KeyPress);
-            this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseClick);
-            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
-            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AwakeSelectionForm_MouseMove);
-            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AwakeSelectionForm_MouseUp);
+            this.Load += new System.EventHandler(this.AwakeSelectionFormOnLoad);
+            this.Paint += new System.Windows.Forms.PaintEventHandler(this.AwakeSelectionFormOnPaint);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.AwakeSelectionFormOnKeypress);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.AwakeSelectionFormOnKeyUp);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.AwakeSelectionFormOnMouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.AwakeSelectionFormOnMouseMove);
+            this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.AwakeSelectionFormOnMouseUp);
             this.ResumeLayout(false);
 
         }

@@ -27,6 +27,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -68,48 +70,52 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Tesseract, Version=3.0.2.0, Culture=neutral, PublicKeyToken=ebeb3d86bef60cbe, processorArchitecture=MSIL">
-      <HintPath>..\packages\Tesseract.3.0.2.0\lib\net451\Tesseract.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\AccuracyBenchmark.cs" />
+    <Compile Include="src\AwakeItem.cs" />
+    <Compile Include="src\AwakeningParseException.cs" />
     <Compile Include="src\AwakeningParser.cs" />
     <Compile Include="src\AwakeningResolver.cs" />
-    <Compile Include="src\AwakeningRoutines.cs" />
-    <Compile Include="src\BotHelper.cs" />
+    <Compile Include="src\AwakeningRoutine.cs" />
+    <Compile Include="src\BotConfig.cs" />
+    <Compile Include="src\KeyboardHook.cs" />
+    <Compile Include="src\Utils\MouseSimulator.cs" />
     <Compile Include="src\Awake.cs" />
-    <Compile Include="src\forms\AwakeBotUserInterface.cs">
+    <Compile Include="src\ServerConfig.cs" />
+    <Compile Include="src\ThreadSafeControlHelper.cs" />
+    <Compile Include="src\Forms\AwakeBotUserInterface.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\forms\AwakeBotUserInterface.Designer.cs">
+    <Compile Include="src\Forms\AwakeBotUserInterface.Designer.cs">
       <DependentUpon>AwakeBotUserInterface.cs</DependentUpon>
     </Compile>
+    <Compile Include="src\Globals.cs" />
     <Compile Include="src\ServerConfigManager.cs" />
-    <Compile Include="src\forms\AwakeSelector.cs">
+    <Compile Include="src\Forms\AwakeSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\forms\AwakeSelector.Designer.cs">
+    <Compile Include="src\Forms\AwakeSelector.Designer.cs">
       <DependentUpon>AwakeSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Process.cs" />
-    <Compile Include="src\forms\ProcessSelector.cs">
+    <Compile Include="src\Forms\ProcessSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\forms\ProcessSelector.Designer.cs">
+    <Compile Include="src\Forms\ProcessSelector.Designer.cs">
       <DependentUpon>ProcessSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="src\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Utils.cs" />
-    <Compile Include="src\Win32API.cs" />
-    <EmbeddedResource Include="src\forms\AwakeBotUserInterface.resx">
+    <Compile Include="src\Utils\StringUtils.cs" />
+    <Compile Include="src\Win32.cs" />
+    <Compile Include="src\Utils\XmlUtils.cs" />
+    <EmbeddedResource Include="src\Forms\AwakeBotUserInterface.resx">
       <DependentUpon>AwakeBotUserInterface.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\forms\AwakeSelector.resx">
+    <EmbeddedResource Include="src\Forms\AwakeSelector.resx">
       <DependentUpon>AwakeSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\forms\ProcessSelector.resx">
+    <EmbeddedResource Include="src\Forms\ProcessSelector.resx">
       <DependentUpon>ProcessSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -151,18 +157,6 @@
   <ItemGroup>
     <Content Include="res\flyff bot icon.ico" />
     <Content Include="Settings.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x64\liblept172.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x64\libtesseract304.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\liblept172.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="x86\libtesseract304.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

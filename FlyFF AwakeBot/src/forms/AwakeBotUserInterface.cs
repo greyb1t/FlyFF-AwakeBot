@@ -1,235 +1,354 @@
-﻿using FlyFF_AwakeBot.src;
-using FlyFF_AwakeBot.Utils;
+﻿using FlyFF_AwakeBot.Utils;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-namespace FlyFF_AwakeBot {
-  public partial class AwakeBotUserInterface : Form {
-    private static string ConfigDirectory { get; set; } = "configs";
-    private ServerConfigManager AwakeTypes { get; set; }
+namespace FlyFF_AwakeBot
+{
+    public partial class AwakeBotUserInterface : Form
+    {
+        private ServerConfig _serverConfig { get; set; }
 
-    public Point ItemPosition { get; set; } = Point.Empty;
-    public Point AwakeScrollPosition { get; set; } = Point.Empty;
-    public Point ReversionPosition { get; set; } = Point.Empty;
-    public Rectangle InventoryRectangle { get; set; }
-    public Process Process { get; private set; }
+        private BotConfig _botConfig = new BotConfig();
 
-    private bool IsDebugSidebarVisible { get; set; } = false;
+        public static AwakeningRoutine AwakeningRoutine = new AwakeningRoutine(null, null, null);
+        private bool IsDebugSidebarVisible { get; set; } = false;
 
-    public AwakeBotUserInterface(Process process) {
-      InitializeComponent();
+        List<AwakeItem> _preferredAwakeItems = new List<AwakeItem>();
 
-      Text = ProcessSelector.BotWindowName;
-      Process = process;
-    }
-
-    private void AwakeBotUserInterface_Load(object sender, EventArgs e) {
-      // Remove the annoying double border from buttons when focus is occured
-      btnItemPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
-      btnAwakeScrollPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
-      btnReversionScrollPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
-      btnSelectInventory.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
-
-      btnItemPosition.MouseUp += (s, ev) => {
-        if (TrySetAwakePosition((Control)s)) {
-          ItemPosition = Cursor.Position;
-          lblItemPosition.Text = ItemPosition.ToString();
-        }
-      };
-
-      btnAwakeScrollPosition.MouseUp += (s, ev) => {
-        if (TrySetAwakePosition((Control)s)) {
-          AwakeScrollPosition = Cursor.Position;
-          lblAwakePosition.Text = AwakeScrollPosition.ToString();
-        }
-      };
-
-      btnReversionScrollPosition.MouseUp += (s, ev) => {
-        if (TrySetAwakePosition((Control)s)) {
-          ReversionPosition = Cursor.Position;
-          lblReversionPosition.Text = ReversionPosition.ToString();
-        }
-      };
-
-      if (!Directory.Exists(ConfigDirectory))
-        Directory.CreateDirectory(ConfigDirectory);
-
-      string[] files = Directory.GetFiles(ConfigDirectory, "*.xml");
-
-      if (files.Length <= 0)
-        GeneralUtils.DisplayError("No server config files found");
-
-      foreach (var file in files) {
-        string fileName = file.Substring(file.LastIndexOf('\\') + 1);
-        fileName = fileName.Substring(0, fileName.LastIndexOf('.'));
-        cbConfigs.Items.Add(fileName);
-      }
-
-      double value = (double)(trackBarMsDelay.Value) / 1000;
-      lblMsDelay.Text = value.ToString() + " s";
-    }
-
-    private void cbConfigs_SelectedIndexChanged(object sender, EventArgs e) {
-      string selectedConfig = cbConfigs.Text;
-      AwakeTypes = new ServerConfigManager(ConfigDirectory, selectedConfig);
-
-      cbAwakeType.Items.Clear();
-
-      foreach (var awake in AwakeTypes.AwakeTypes)
-        cbAwakeType.Items.Add(awake.Name);
-    }
-
-    private void configDirectoryToolStripMenuItem1_Click(object sender, EventArgs e) {
-      System.Diagnostics.Process.Start(ConfigDirectory);
-    }
-
-    private void btnNewAwake_Click(object sender, EventArgs e) {
-      gbNewAwake.Visible = !gbNewAwake.Visible;
-    }
-
-    private void btnApplyAwake_Click(object sender, EventArgs e) {
-      int selectedComboIndex = cbAwakeType.SelectedIndex;
-
-      if (selectedComboIndex == -1) {
-        GeneralUtils.DisplayError("Please select an awake type!");
-        return;
-      }
-
-      int awakeValue = (int)numericAwakeValue.Value;
-
-      string[] awake = { selectedComboIndex.ToString(),
-                AwakeTypes.AwakeTypes[selectedComboIndex].Name, awakeValue.ToString() };
-      lviAwakes.Items.Add(new ListViewItem(awake));
-      gbNewAwake.Visible = false;
-    }
-
-    private void btnDeleteAwake_Click(object sender, EventArgs e) {
-      if (lviAwakes.SelectedIndices.Count > 0) {
-        int selectedIndex = lviAwakes.SelectedIndices[0];
-        lviAwakes.Items.RemoveAt(selectedIndex);
-      }
-      else {
-        GeneralUtils.DisplayError("Select an awake to delete!");
-      }
-    }
-
-    private void configDirectoryToolStripMenuItem_Click(object sender, EventArgs e) {
-      Application.Exit();
-    }
-
-    private void trackBarMsDelay_Scroll(object sender, EventArgs e) {
-      double value = (double)(trackBarMsDelay.Value) / 1000;
-      lblMsDelay.Text = value.ToString() + " s";
-    }
-
-    private bool TrySetAwakePosition(Control control) {
-      if (control.RectangleToScreen(control.DisplayRectangle).Contains(Cursor.Position)) {
-        GeneralUtils.DisplayError("Click and drag the cursor to the item that will be awaked");
-        return false;
-      }
-
-      control.BackColor = Color.FromArgb(11, 166, 65);
-
-      return true;
-    }
-
-    private void btnStartBot_Click(object sender, EventArgs e) {
-      try {
-        AwakeningRoutines awakeRoutine = new AwakeningRoutines(this, ItemPosition,
-            AwakeScrollPosition, ReversionPosition, InventoryRectangle, AwakeTypes);
-
-        if (awakeRoutine.IsStopped()) {
-          if (ItemPosition == Point.Empty || AwakeScrollPosition == Point.Empty || ReversionPosition == Point.Empty) {
-            GeneralUtils.DisplayError("Set all of the item and scroll positions before starting the bot!");
-            return;
-          }
-          else if (cbConfigs.SelectedIndex == -1) {
-            GeneralUtils.DisplayError("Select a server config before starting the bot!");
-            return;
-          }
-          else if (lviAwakes.Items.Count <= 0) {
-            GeneralUtils.DisplayError("You need atleast one awake added!");
-            return;
-          }
+        public AwakeBotUserInterface(Process process)
+        {
+            InitializeComponent();
+            _botConfig.Process = process;
         }
 
-        awakeRoutine.ToggleBotStatus();
-      }
-      catch (Exception ex) {
-        MessageBox.Show(ex.ToString());
-      }
+        private void AwakeBotUserInterfaceLoad(object sender, EventArgs e)
+        {
+            Text = Globals.BotWindowName;
+
+            // Remove thse annoying double border from buttons when focus is occured
+            ButtonItemPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
+            ButtonAwakeScrollPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
+            ButtonReversionScrollPosition.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
+            ButtonSelectAwakeRect.GotFocus += (s, ev) => { ((Button)s).NotifyDefault(false); };
+
+            AddPositionButtonsMouseUpEvent();
+
+            UpdateTrackbarLabel();
+
+            if (!Directory.Exists(Globals.ConfigFolderName))
+                Directory.CreateDirectory(Globals.ConfigFolderName);
+
+            string[] files = Directory.GetFiles(Globals.ConfigFolderName, "*.xml");
+
+            if (files.Length <= 0)
+            {
+                Display.Error("I was unable to find any server configs. " +
+                    "Ensure that the configs are located in a folder called \"configs\".");
+            }
+
+            foreach (var file in files)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file);
+                ComboBoxConfigs.Items.Add(fileName);
+            }
+        }
+
+        private void UpdateTrackbarLabel()
+        {
+            var value = (double)(TrackBarBeforeSnapshotMsDelay.Value) / 1000;
+            LabelMsDelay.Text = value.ToString() + " s";
+        }
+
+        private void AddPositionButtonsMouseUpEvent()
+        {
+            ButtonItemPosition.MouseUp += (s, ev) =>
+            {
+                if (TrySetAwakePosition((Control)s))
+                {
+                    _botConfig.ItemPosition = Cursor.Position;
+                    LabelItemPosition.Text = _botConfig.ItemPosition.ToString();
+                }
+            };
+
+            ButtonAwakeScrollPosition.MouseUp += (s, ev) =>
+            {
+                if (TrySetAwakePosition((Control)s))
+                {
+                    _botConfig.AwakeScrollPosition = Cursor.Position;
+                    LabelAwakePosition.Text = _botConfig.AwakeScrollPosition.ToString();
+                }
+            };
+
+            ButtonReversionScrollPosition.MouseUp += (s, ev) =>
+            {
+                if (TrySetAwakePosition((Control)s))
+                {
+                    _botConfig.ReversionPosition = Cursor.Position;
+                    LabelReversionPosition.Text = _botConfig.ReversionPosition.ToString();
+                }
+            };
+        }
+
+        private void RefreshConfigAwakeTypes(List<Awake> awakeTypes)
+        {
+            ComboBoxAwakeType.Items.Clear();
+
+            foreach (var awake in awakeTypes)
+                ComboBoxAwakeType.Items.Add(awake.Name);
+        }
+
+        private void ComboBoxConfigsOnSelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (ComboBoxConfigs.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            string selectedConfig = ComboBoxConfigs.Text;
+
+            try
+            {
+                _serverConfig = ServerConfigManager.ReadConfig(selectedConfig);
+            }
+            catch (Exception ex)
+            {
+                Display.Error($"Failed while parsing the config {selectedConfig} with exception message: {ex.ToString()}");
+
+                ComboBoxConfigs.SelectedIndex = -1;
+                _serverConfig = null;
+                return;
+            }
+
+            RefreshConfigAwakeTypes(_serverConfig.AwakeTypes);
+        }
+
+        private void ConfigDirectoryToolStripMenuItem1OnClick(object sender, EventArgs e)
+        {
+            Process.Start(Globals.ConfigFolderName);
+        }
+
+        private void ButtonNewAwakeOnClick(object sender, EventArgs e)
+        {
+            GroupBoxNewAwake.Visible = !GroupBoxNewAwake.Visible;
+        }
+
+        internal void ResetAddAwakeControls()
+        {
+            ComboBoxAwakeType.SelectedIndex = -1;
+            NumericAwakeValue.Value = 0;
+            NumericAwakeGroup.Value = 0;
+        }
+
+        private void ButtonAddAwakeOnClick(object sender, EventArgs e)
+        {
+            int selectedComboIndex = ComboBoxAwakeType.SelectedIndex;
+
+            if (selectedComboIndex == -1)
+            {
+                Display.Error("You cannot add an awake without telling me which awaketype silly!");
+                return;
+            }
+
+            int newAwakeValue = (int)NumericAwakeValue.Value;
+
+            var newAwakeName = _serverConfig.AwakeTypes[selectedComboIndex].Name;
+
+            int newAwakeGroup = (int)NumericAwakeGroup.Value;
+
+            ListviewAwakes.Items.Add(new ListViewItem(new string[] {
+                newAwakeName,
+                newAwakeValue.ToString(),
+                newAwakeGroup.ToString(),
+            }));
+
+            GroupBoxNewAwake.Visible = false;
+            ResetAddAwakeControls();
+
+            var newAwake = new Awake()
+            {
+                Name = newAwakeName,
+                Value = newAwakeValue,
+                TypeIndex = Convert.ToInt16(selectedComboIndex),
+            };
+
+            foreach (var preferredAwake in _preferredAwakeItems)
+            {
+                // Are they in the same group?
+                if (newAwakeGroup == preferredAwake.Group)
+                {
+                    if (preferredAwake.Awake.TypeIndex == newAwake.TypeIndex)
+                    {
+                        Display.Info("This type of awake is already added to the list.\n\n" +
+                            "When you add two different, they will interally be converted into one, the same goes for the awake on the item.\n\n" +
+                            "Example: If you add one STR+50 awake into the list, the bot will stop when it gets e.g. STR+23 and STR+30 because it will turn into STR+53 internally.");
+                    }
+                }
+            }
+
+            _preferredAwakeItems.Add(new AwakeItem
+            {
+                Awake = newAwake,
+                Group = newAwakeGroup,
+            });
+        }
+
+        private void ButtonDeleteAwakeOnClick(object sender, EventArgs e)
+        {
+            if (ListviewAwakes.SelectedIndices.Count > 0)
+            {
+                int selectedIndex = ListviewAwakes.SelectedIndices[0];
+                ListviewAwakes.Items.RemoveAt(selectedIndex);
+                _preferredAwakeItems.RemoveAt(selectedIndex);
+            }
+            else
+            {
+                Display.Error("You have to select an awake to delete in the list silly!");
+            }
+        }
+
+        private void ConfigDirectoryToolStripMenuItemOnClick(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+
+        private void TrackBarMsDelayOnScroll(object sender, EventArgs e)
+        {
+            UpdateTrackbarLabel();
+        }
+
+        private bool TrySetAwakePosition(Control control)
+        {
+            if (control.RectangleToScreen(control.DisplayRectangle).Contains(Cursor.Position))
+            {
+                Display.Error("Click and drag the cursor to the item that will be awaked.");
+                return false;
+            }
+
+            control.BackColor = Color.FromArgb(11, 166, 65);
+
+            return true;
+        }
+
+        private bool LanguageTraineddataExists()
+        {
+            var traineddataPath = Globals.TesseractFolderName + "\\tessdata\\" + _serverConfig.Language + ".traineddata";
+            return File.Exists(traineddataPath);
+        }
+
+        private void ButtonStartBotOnClick(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!AwakeningRoutine.IsRunning())
+                {
+                    var result = MessageBox.Show(this, "Does the item you want to awake already have an awakening?\n\n" +
+                        "If not, you must awaken it once first. If you do not, the bot will fail to continue.\n\n" +
+                        "Press \"OK\" if it has an awakening.\nPress \"Cancel\" if it does not have an awakening. Manually awake it yourself once.",
+                        "Awake the item first!", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
+
+                    if (result == DialogResult.Cancel)
+                    {
+                        return;
+                    }
+
+                    if (_botConfig.ItemPosition == Point.Empty ||
+                        _botConfig.AwakeScrollPosition == Point.Empty ||
+                        _botConfig.ReversionPosition == Point.Empty)
+                    {
+                        Display.Error("Set all of the item and scroll positions before starting the bot!");
+                        return;
+                    }
+                    else if (ComboBoxConfigs.SelectedIndex == -1)
+                    {
+                        Display.Error("Select a server config before starting the bot!");
+                        return;
+                    }
+                    else if (ListviewAwakes.Items.Count <= 0)
+                    {
+                        Display.Error("You need atleast one awake added!");
+                        return;
+                    }
+
+                    AwakeningRoutine = new AwakeningRoutine(this, _botConfig, _serverConfig);
+
+                    // check if required tessdata language is there
+                    if (!LanguageTraineddataExists())
+                    {
+                        Display.Error($"You are missing the tesseract \"{_serverConfig.Language}.traineddata\" " +
+                            $"file required for that language");
+                        return;
+                    }
+
+                    AwakeningRoutine.StartBot(_preferredAwakeItems);
+                }
+                else
+                {
+                    AwakeningRoutine.StopBot();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+        }
+
+        private void ButtonSelectAwakeRectOnClick(object sender, EventArgs e)
+        {
+            AwakeSelectionForm itemAwakeSelectionForm = new AwakeSelectionForm();
+            var processSelectionResult = itemAwakeSelectionForm.ShowDialog();
+
+            if (processSelectionResult == DialogResult.OK)
+            {
+                Rectangle resultRectangle = itemAwakeSelectionForm.SelectionResult;
+
+                if (!resultRectangle.IsEmpty)
+                {
+                    _botConfig.AwakeReadRectangle = resultRectangle;
+
+                    LabelAwakeReadRectangle.Text = "{TC=" + resultRectangle.X.ToString() +
+                        ", BC=" + (resultRectangle.X + resultRectangle.Height).ToString() + "}";
+
+                    var senderControl = (Control)sender;
+                    senderControl.BackColor = Color.FromArgb(11, 166, 65);
+                }
+            }
+        }
+
+        private void CreatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Display.Info("Created by greyb1t");
+        }
+
+        private void OptimizationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Display.Info("When using the awakebot, be in an area that isn't laggy.\n\n" +
+                                    "When setting the \"Item Awake Read Rect\", make sure to make the rectangle big enough to fit a larger awake and multiple awakes.\n\n" +
+                                    "Important that you don't make the rectangle too big to ensure that no other text/pixels with that same color gets in the picture.");
+        }
+
+        private void HowToUseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Process.Start("https://www.youtube.com/watch?v=15anXFvMVNs");
+        }
+
+        private void ImageProcessingToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            const int widthPadding = 10;
+
+            if (!IsDebugSidebarVisible)
+            {
+                Size = new Size(Size.Width + TabControlDebugImageProcessing.Size.Width + widthPadding, Size.Height);
+            }
+            else
+            {
+                Size = new Size(Size.Width - TabControlDebugImageProcessing.Size.Width - widthPadding, Size.Height);
+            }
+
+            IsDebugSidebarVisible = !IsDebugSidebarVisible;
+        }
     }
-
-    unsafe private void btnSelectInventory_Click(object sender, EventArgs e) {
-      Rectangle outRect = new Rectangle();
-      Form itemAwakeSelector = new AwakeSelectionForm(&outRect);
-      itemAwakeSelector.ShowDialog();
-
-      if (!outRect.IsEmpty) {
-        InventoryRectangle = outRect;
-        lblInventoryRectangle.Text = "{TC=" + outRect.X.ToString() + ", BC=" + (outRect.X + outRect.Height).ToString() + "}";
-        ((Control)sender).BackColor = Color.FromArgb(11, 166, 65);
-      }
-    }
-
-    private void creatorToolStripMenuItem_Click(object sender, EventArgs e) {
-      GeneralUtils.DisplayInfo("Created by greyb1t - flyffbot.com");
-    }
-
-    private void optimizationToolStripMenuItem_Click(object sender, EventArgs e) {
-      GeneralUtils.DisplayInfo("When using the awakebot, be in an area that isn't laggy.\n\n" +
-                              "When setting the \"Item Awake Read Rect\", make sure to make the box a little bigger incase you get a longer awake.");
-    }
-
-    private void howToUseToolStripMenuItem_Click(object sender, EventArgs e) {
-      System.Diagnostics.Process.Start("https://www.youtube.com/watch?v=15anXFvMVNs");
-    }
-
-    private void imageProcessingToolStripMenuItem_Click(object sender, EventArgs e) {
-      const int widthPadding = 10;
-
-      if (!IsDebugSidebarVisible) {
-        Size = new Size(Size.Width + TabControlDebugImageProcessing.Size.Width + widthPadding, Size.Height);
-      }
-      else {
-        Size = new Size(Size.Width - TabControlDebugImageProcessing.Size.Width - widthPadding, Size.Height);
-      }
-
-      IsDebugSidebarVisible = !IsDebugSidebarVisible;
-    }
-
-    private bool isMouseDown = false;
-    private int deltaX;
-    private int deltaY;
-
-    private void PictureBoxDebug4_MouseMove(object sender, MouseEventArgs e) {
-      int newX = PictureBoxDebug4.Left + (e.X - deltaX);
-      int newY = PictureBoxDebug4.Top + (e.Y - deltaY);
-
-      if (isMouseDown) {
-        PictureBoxDebug4.Left = newX;
-        PictureBoxDebug4.Top = newY;
-      }
-    }
-
-    private void PictureBoxDebug4_MouseDown(object sender, MouseEventArgs e) {
-      deltaX = e.X;
-      deltaY = e.Y;
-      isMouseDown = true;
-    }
-
-    private void PictureBoxDebug4_MouseUp(object sender, MouseEventArgs e) {
-      isMouseDown = false;
-    }
-
-    private void PictureBoxDebug4_MouseEnter(object sender, EventArgs e) {
-      //Cursor.Current = Cursors.Hand;
-    }
-
-    private void PictureBoxDebug4_MouseLeave(object sender, EventArgs e) {
-      //Cursor.Current = Cursors.Arrow;
-    }
-  }
 }

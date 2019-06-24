@@ -1,187 +1,148 @@
-﻿using FlyFF_AwakeBot.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
+using FlyFF_AwakeBot.Utils;
 
-namespace FlyFF_AwakeBot.src {
-  class AwakeningParser {
-    private ServerConfigManager AwakeManager { get; }
-    private string AwakeString { get; set; }
-    private AwakeBotUserInterface Ui { get; }
+namespace FlyFF_AwakeBot
+{
+    class AwakeningParser
+    {
+        private ServerConfig _serverConfig { get; }
+        private string _awakeString { get; }
 
-    public AwakeningParser(AwakeBotUserInterface ui, ServerConfigManager awakeManager, string awake) {
-      Ui = ui;
-      AwakeManager = awakeManager;
-      AwakeString = awake;
-    }
-
-    private bool IsValidAwakeLine(string awake) {
-      return StringUtils.ContainsPlusOrMinus(awake) &&
-          StringUtils.ContainsNumber(awake) &&
-          StringUtils.ContainsLetters(awake) &&
-          awake.Length > 0;
-    }
-
-    /// <summary>
-    /// Splits a string or multiple awakes into a list of awakes.
-    /// </summary>
-    /// <returns></returns>
-    private List<Awake> SplitAwakeLines() {
-      List<Awake> awakes = new List<Awake>();
-
-      int index;
-      int lastIndex = 0;
-
-      do {
-        index = AwakeString.IndexOf('\n', lastIndex);
-
-        if (index != -1) {
-          string awakeText = AwakeString.Substring(lastIndex, index - lastIndex);
-
-          if ((!StringUtils.ContainsNumber(awakeText) || !StringUtils.ContainsPlusOrMinus(awakeText)) && awakeText.Length != 0) {
-            index = AwakeString.IndexOf('\n', index + 1);
-            awakeText = AwakeString.Substring(lastIndex, index - lastIndex);
-            awakeText = StringUtils.StripAllNewlines(awakeText);
-          }
-
-          if (IsValidAwakeLine(awakeText))
-            awakes.Add(new Awake(awakeText));
-
-          lastIndex = index + 1;
+        public AwakeningParser(ServerConfig serverConfig, string awakeString)
+        {
+            _serverConfig = serverConfig;
+            _awakeString = RemoveIgnoredWords(awakeString);
         }
 
-      } while (index != -1);
+        private string RemoveIgnoredWords(string awakeString)
+        {
+            foreach (var ignoredWord in _serverConfig.OcrIgnoredWords)
+            {
+                awakeString = awakeString.Replace(ignoredWord, "");
+            }
 
-      return awakes;
-    }
-
-    /// <summary>
-    /// Gets the name of the specified awake.
-    /// </summary>
-    /// <param name="awake"></param>
-    /// <returns></returns>
-    private string DetermineAwakeName(string awake) {
-      short? awakeTypeIndex = DetermineAwakeType(awake);
-
-      foreach (var awakeType in AwakeManager.AwakeTypes) {
-        if (awakeType.TypeIndex == awakeTypeIndex)
-          return awakeType.Name;
-      }
-
-      return null;
-    }
-
-    /// <summary>
-    /// Gets the value of the specified awake.
-    /// </summary>
-    /// <param name="awake"></param>
-    /// <returns></returns>
-    private int? ParseAwakeValue(string awake) {
-      for (int i = 0; i < awake.Length; ++i) {
-        if (awake[i] == '+') {
-          string val = awake.Substring(i + 1, awake.Length - i - 1);
-
-          while (!StringUtils.IsPureNumber(val))
-            val = StringUtils.StripAllExceptNumbers(val);
-
-          return Convert.ToInt32(val);
-        }
-        else if (awake[i] == '-') {
-          string val = awake.Substring(i + 1, awake.Length - i - 1);
-
-          while (!StringUtils.IsPureNumber(val))
-            val = StringUtils.StripAllExceptNumbers(val);
-
-          return -Convert.ToInt32(val);
-        }
-      }
-
-      return null;
-    }
-
-    private int GetPlusOrMinusIndex(string awake) {
-      for (int i = 0; i < awake.Length; ++i) {
-        if (awake[i] == '+') {
-          if (!Char.IsWhiteSpace(awake[i - 1])) {
-            return i + 1;
-          }
-          else {
-            return i;
-          }
-        }
-        else if (awake[i] == '-') {
-          if (!Char.IsWhiteSpace(awake[i - 1])) {
-            return i + 1;
-          }
-          else {
-            return i;
-          }
-        }
-      }
-
-      return -1;
-    }
-
-    /// <summary>
-    /// Gets the type of specified awake.
-    /// </summary>
-    /// <param name="awake"></param>
-    /// <returns></returns>
-    public short? DetermineAwakeType(string awake) {
-      for (short i = 0; i < AwakeManager.AwakeTypes.Count; ++i) {
-        int plusMinusIndex = GetPlusOrMinusIndex(awake);
-
-        if (plusMinusIndex != -1)
-          awake = awake.Substring(0, plusMinusIndex - 1);
-
-        if (awake.Contains(AwakeManager.AwakeTypes[i].Text))
-          return i;
-      }
-
-      return null;
-    }
-
-    /// <summary>
-    /// Parses all the awakes and outputs them into a list of parsed awakes.
-    /// </summary>
-    /// <returns></returns>
-    public List<Awake> GetCompletedAwakes() {
-      List<Awake> awakes = SplitAwakeLines();
-
-      for (int i = 0; i < awakes.Count; ++i) {
-        awakes[i].Name = DetermineAwakeName(awakes[i].Text);
-        awakes[i].TypeIndex = DetermineAwakeType(awakes[i].Text);
-        awakes[i].Value = ParseAwakeValue(awakes[i].Text);
-      }
-
-      return awakes;
-    }
-
-    /// <summary>
-    /// Gets the preferred awakes from the listview.
-    /// </summary>
-    /// <returns></returns>
-    public static List<Awake> GetPreferredAwakes(ListView lvi) {
-      List<Awake> preferredAwakes = new List<Awake>();
-
-      for (int i = 0; i < lvi.Items.Count; ++i) {
-        Awake awake = new Awake();
-
-        for (int j = 0; j < lvi.Items[i].SubItems.Count; ++j) {
-          string subitemValue = lvi.Items[i].SubItems[j].Text;
-
-          if (j == 0)
-            awake.TypeIndex = Convert.ToInt16(subitemValue);
-          else if (j == 1)
-            awake.Name = subitemValue;
-          else if (j == 2)
-            awake.Value = Convert.ToInt32(subitemValue);
+            return awakeString;
         }
 
-        preferredAwakes.Add(awake);
-      }
+        private bool IsValidAwakeLine(string awake)
+        {
+            return StringUtils.ContainsPlusOrMinus(awake) &&
+                StringUtils.ContainsNumber(awake) &&
+                StringUtils.ContainsLetters(awake) &&
+                awake.Length > 0;
+        }
 
-      return preferredAwakes;
+        private List<Awake> SplitAwakeLines()
+        {
+            List<Awake> awakes = new List<Awake>();
+
+            int index;
+            int lastIndex = 0;
+
+            do
+            {
+                index = _awakeString.IndexOf('\n', lastIndex);
+
+                if (index != -1)
+                {
+                    string awakeText = _awakeString.Substring(lastIndex, index - lastIndex);
+
+                    // if the awake text is not valid yet, then it is probably because the awake has a line break
+                    if (!IsValidAwakeLine(awakeText))
+                    {
+                        index = _awakeString.IndexOf('\n', index + 1);
+                        if (index != -1)
+                        {
+                            awakeText = _awakeString.Substring(lastIndex, index - lastIndex);
+                            awakeText = StringUtils.StripAllNewlines(awakeText);
+                        }
+                    }
+
+                    if (!IsValidAwakeLine(awakeText))
+                        throw new AwakeningParseException($"The awaketext: \"{awakeText}\" is not a valid awake");
+
+                    awakes.Add(new Awake()
+                    {
+                        Text = awakeText,
+                    });
+
+                    lastIndex = index + 1;
+                }
+
+            } while (index != -1);
+
+            return awakes;
+        }
+
+        private string DetermineAwakeName(string awake)
+        {
+            short awakeTypeIndex = DetermineAwakeType(awake);
+
+            foreach (var awakeType in _serverConfig.AwakeTypes)
+            {
+                if (awakeType.TypeIndex == awakeTypeIndex)
+                    return awakeType.Name;
+            }
+
+            return null;
+        }
+
+        private int? ParseAwakeValue(string awake)
+        {
+            int plusMinusIndex = awake.IndexOfAny(new char[] { '+', '-' });
+
+            if (plusMinusIndex != -1)
+            {
+                string val = awake.Substring(plusMinusIndex + 1, awake.Length - plusMinusIndex - 1);
+
+                while (!StringUtils.IsOnlyNumber(val))
+                    val = StringUtils.StripAllExceptNumbers(val);
+
+                char c = awake[plusMinusIndex];
+
+                if (c == '+')
+                    return Convert.ToInt32(val);
+                else if (c == '-')
+                    return -Convert.ToInt32(val);
+            }
+
+            throw new AwakeningParseException($"Unable to find the value of the awake: \"{awake}\"");
+        }
+
+        public short DetermineAwakeType(string awake)
+        {
+            int plusMinusIndex = awake.IndexOfAny(new char[] { '+', '-' });
+
+            if (plusMinusIndex != -1)
+                awake = awake.Substring(0, plusMinusIndex - 1);
+            else
+                throw new AwakeningParseException($"Unable to find the '+' or '-' in the awake: \"{awake}\"");
+
+            string strippedAwake = StringUtils.StripCommasAndDots(awake.ToLower());
+
+            for (short i = 0; i < _serverConfig.AwakeTypes.Count; ++i)
+            {
+                // Added StripCommasAndDots because ocr mistakes '.' for ',' and vice-versa
+                if (strippedAwake == StringUtils.StripCommasAndDots(_serverConfig.AwakeTypes[i].Text.ToLower()))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        public List<Awake> GetCompletedAwakes()
+        {
+            List<Awake> awakes = SplitAwakeLines();
+
+            for (int i = 0; i < awakes.Count; ++i)
+            {
+                awakes[i].Name = DetermineAwakeName(awakes[i].Text);
+                awakes[i].TypeIndex = DetermineAwakeType(awakes[i].Text);
+                awakes[i].Value = ParseAwakeValue(awakes[i].Text);
+            }
+
+            return awakes;
+        }
     }
-  }
 }

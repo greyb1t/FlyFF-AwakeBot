@@ -1,137 +1,119 @@
 ﻿using FlyFF_AwakeBot.Utils;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 
-namespace FlyFF_AwakeBot {
-  public class ServerConfigManager {
-    public List<Awake> AwakeTypes { get; set; } = new List<Awake>();
-    public Pixel AwakeTextPixelColor { get; set; }
-    public int ScrollDelay { get; set; }
-    public HashSet<char> WhitelistedCharacters { get; set; } = new HashSet<char>();
-    public string Language { get; set; }
+namespace FlyFF_AwakeBot
+{
+    public static class ServerConfigManager
+    {
+        public static ServerConfig ReadConfig(string configName)
+        {
+            ServerConfig config = new ServerConfig();
 
-    private readonly string ConfigDirectory;
-    private readonly string ConfigName;
+            var xmlDocument = new XmlDocument();
 
-    public ServerConfigManager(string configDirectory, string configName) {
-      ConfigDirectory = configDirectory;
-      ConfigName = configName;
+            xmlDocument.Load(Globals.ConfigFolderName + "\\" + configName + ".xml");
 
-      ParseConfig();
-    }
+            var settingsNode = XmlUtils.GetNode("Settings", xmlDocument.ChildNodes);
 
-    /// <summary>
-    /// Parses the config and sets all variables appropriately.
-    /// </summary>
-    private void ParseConfig() {
-      try {
-        XmlDocument awakeTypeDoc = new XmlDocument();
-        awakeTypeDoc.Load(ConfigDirectory + "\\" + ConfigName + ".xml");
-        XmlElement root = awakeTypeDoc.DocumentElement;
+            config.AwakeTypes = ReadAwakeTypes(settingsNode);
+            config.WhitelistedCharacters = GetWhitelistedCharacters(config.AwakeTypes);
 
-        ReadAwakeTypes(root);
+            var pixelColorSettingNode = XmlUtils.GetNode("Setting", "AwakeTextPixelColorRgb", settingsNode.ChildNodes);
 
-        foreach (var awake in AwakeTypes) {
-          foreach (char c in awake.Text)
-            WhitelistedCharacters.Add(c);
-        }
+            config.AwakeTextPixelColor = ConvertRgbColorString(pixelColorSettingNode.InnerText);
 
-        string pixelColor = ReadSettingValue(root, "AwakeTextPixelColorRgb");
-        AwakeTextPixelColor = ConvertRgbColorString(pixelColor);
+            var scrollDelaySettingNode = XmlUtils.GetNode("Setting", "ScrollDelayMs", settingsNode.ChildNodes);
+            config.ScrollFinishDelay = Convert.ToInt32(scrollDelaySettingNode.InnerText);
 
-        string scrollDelay = ReadSettingValue(root, "ScrollDelayMs");
-        ScrollDelay = Convert.ToInt32(scrollDelay);
+            var languageSettingNode = XmlUtils.GetNode("Setting", "Language", settingsNode.ChildNodes);
+            config.Language = languageSettingNode.InnerText;
 
-        if (scrollDelay == null)
-          ScrollDelay = 200;
+            var ocrIgnoreWordsSettingNode = XmlUtils.GetNode("Setting", "OcrIgnoreWords", settingsNode.ChildNodes);
 
-        Language = ReadSettingValue(root, "Language");
-      }
-      catch (FileNotFoundException) {
-        GeneralUtils.DisplayError("Unable to load awake config " + ConfigDirectory);
-      }
-      catch (Exception ex) {
-        GeneralUtils.DisplayError("Unable to parse config\n\n" + ex.ToString());
-      }
-    }
-
-    /// <summary>
-    /// Reads a setting from xml document.
-    /// </summary>
-    /// <param name="root"></param>
-    /// <param name="settingName"></param>
-    /// <returns></returns>
-    private string ReadSettingValue(XmlElement root, string settingName) {
-      foreach (XmlNode node in root) {
-        if (node.Name == "Setting") {
-          string attrName = node.Attributes[0].Value;
-
-          if (attrName == settingName)
-            return node.InnerText;
-        }
-      }
-
-      return null;
-    }
-
-    /// <summary>
-    /// Reads all the awake types and appends them into a list.
-    /// </summary>
-    /// <param name="root"></param>
-    private void ReadAwakeTypes(XmlElement root) {
-      foreach (XmlNode typeNode in root.ChildNodes) {
-        if (typeNode.Name == "AwakeTypes") {
-          foreach (XmlNode awakeTypesNode in typeNode.ChildNodes) {
-            if (awakeTypesNode.Name == "Type") {
-              AwakeTypes.Add(new Awake(awakeTypesNode.Attributes[0].Value,
-                  awakeTypesNode.Attributes[1].Value, (short?)AwakeTypes.Count));
+            if (ocrIgnoreWordsSettingNode != null)
+            {
+                config.OcrIgnoredWords = ocrIgnoreWordsSettingNode.InnerText.Split(',');
             }
-          }
-        }
-      }
-    }
 
-    /// <summary>
-    /// Converts a rgb color from string into a Pixel.
-    /// </summary>
-    /// <param name="rgbColor"></param>
-    /// <returns></returns>
-    private Pixel ConvertRgbColorString(string rgbColor) {
-      Pixel pixel = new Pixel();
-
-      int index;
-      int lastIndex = 0;
-
-      PixelType pixelColorType = PixelType.R;
-
-      do {
-        index = rgbColor.IndexOf(',', lastIndex);
-
-        string pixelColorValue = rgbColor.Substring(lastIndex, index != -1 ? (index - lastIndex) : rgbColor.Length - lastIndex);
-        pixelColorValue = StringUtils.StripAllExceptNumbers(pixelColorValue);
-        byte pixelColorValueInt = Convert.ToByte(pixelColorValue);
-
-        switch (pixelColorType) {
-          case PixelType.R:
-            pixel.r = pixelColorValueInt;
-            break;
-          case PixelType.G:
-            pixel.g = pixelColorValueInt;
-            break;
-          case PixelType.B:
-            pixel.b = pixelColorValueInt;
-            break;
-          default:
-            break;
+            return config;
         }
 
-        pixelColorType += 1;
-        lastIndex = index + 1;
-      } while (index != -1);
+        private static HashSet<char> GetWhitelistedCharacters(List<Awake> awakeTypes)
+        {
+            HashSet<char> whitelistedCharacters = new HashSet<char>();
 
-      return pixel;
+            foreach (var awake in awakeTypes)
+            {
+                foreach (char c in awake.Text)
+                    whitelistedCharacters.Add(c);
+            }
+
+            return whitelistedCharacters;
+        }
+
+        private static List<Awake> ReadAwakeTypes(XmlNode settingsNode)
+        {
+            var awakeTypeNodes = XmlUtils.GetNode("AwakeTypes", settingsNode.ChildNodes);
+
+            List<Awake> awakeTypes = new List<Awake>();
+
+            foreach (XmlNode awakeTypeNode in awakeTypeNodes)
+            {
+                if (awakeTypeNode.Name == "Type")
+                {
+                    var awake = new Awake()
+                    {
+                        Name = XmlUtils.GetAttribute(awakeTypeNode, "name").Value,
+                        Text = XmlUtils.GetAttribute(awakeTypeNode, "gametext").Value,
+                        TypeIndex = (short)awakeTypes.Count,
+                    };
+
+                    awakeTypes.Add(awake);
+                }
+            }
+
+            return awakeTypes;
+        }
+
+        private static Pixel ConvertRgbColorString(string rgbColor)
+        {
+            Pixel pixel = new Pixel();
+
+            int index;
+            int lastIndex = 0;
+
+            PixelType pixelColorType = PixelType.R;
+
+            do
+            {
+                index = rgbColor.IndexOf(',', lastIndex);
+
+                string pixelColorValue = rgbColor.Substring(lastIndex, index != -1 ? (index - lastIndex) : rgbColor.Length - lastIndex);
+                pixelColorValue = StringUtils.StripAllExceptNumbers(pixelColorValue);
+                byte pixelColorValueInt = Convert.ToByte(pixelColorValue);
+
+                switch (pixelColorType)
+                {
+                    case PixelType.R:
+                        pixel.r = pixelColorValueInt;
+                        break;
+                    case PixelType.G:
+                        pixel.g = pixelColorValueInt;
+                        break;
+                    case PixelType.B:
+                        pixel.b = pixelColorValueInt;
+                        break;
+                    default:
+                        break;
+                }
+
+                pixelColorType += 1;
+                lastIndex = index + 1;
+            } while (index != -1);
+
+            return pixel;
+        }
     }
-  }
 }

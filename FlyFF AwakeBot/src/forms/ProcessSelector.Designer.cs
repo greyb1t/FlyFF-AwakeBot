@@ -24,38 +24,38 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProcessSelector));
-            this.btnSelectProcess = new System.Windows.Forms.Button();
-            this.lviProcesses = new System.Windows.Forms.ListView();
+            this.ButtonSelectProcess = new System.Windows.Forms.Button();
+            this.ListViewProcesses = new System.Windows.Forms.ListView();
             this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colPid = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.colWndTitle = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.SuspendLayout();
             // 
-            // btnSelectProcess
+            // ButtonSelectProcess
             // 
-            this.btnSelectProcess.Location = new System.Drawing.Point(12, 267);
-            this.btnSelectProcess.Name = "btnSelectProcess";
-            this.btnSelectProcess.Size = new System.Drawing.Size(524, 23);
-            this.btnSelectProcess.TabIndex = 0;
-            this.btnSelectProcess.Text = "Select";
-            this.btnSelectProcess.UseVisualStyleBackColor = true;
-            this.btnSelectProcess.Click += new System.EventHandler(this.btnSelectProcess_Click);
+            this.ButtonSelectProcess.Location = new System.Drawing.Point(12, 267);
+            this.ButtonSelectProcess.Name = "ButtonSelectProcess";
+            this.ButtonSelectProcess.Size = new System.Drawing.Size(524, 23);
+            this.ButtonSelectProcess.TabIndex = 0;
+            this.ButtonSelectProcess.Text = "Select";
+            this.ButtonSelectProcess.UseVisualStyleBackColor = true;
+            this.ButtonSelectProcess.Click += new System.EventHandler(this.ButtonSelectProcessOnClick);
             // 
-            // lviProcesses
+            // ListViewProcesses
             // 
-            this.lviProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.ListViewProcesses.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
             this.colPid,
             this.colWndTitle});
-            this.lviProcesses.FullRowSelect = true;
-            this.lviProcesses.HideSelection = false;
-            this.lviProcesses.Location = new System.Drawing.Point(12, 12);
-            this.lviProcesses.MultiSelect = false;
-            this.lviProcesses.Name = "lviProcesses";
-            this.lviProcesses.Size = new System.Drawing.Size(524, 249);
-            this.lviProcesses.TabIndex = 1;
-            this.lviProcesses.UseCompatibleStateImageBehavior = false;
-            this.lviProcesses.View = System.Windows.Forms.View.Details;
+            this.ListViewProcesses.FullRowSelect = true;
+            this.ListViewProcesses.HideSelection = false;
+            this.ListViewProcesses.Location = new System.Drawing.Point(12, 12);
+            this.ListViewProcesses.MultiSelect = false;
+            this.ListViewProcesses.Name = "ListViewProcesses";
+            this.ListViewProcesses.Size = new System.Drawing.Size(524, 249);
+            this.ListViewProcesses.TabIndex = 1;
+            this.ListViewProcesses.UseCompatibleStateImageBehavior = false;
+            this.ListViewProcesses.View = System.Windows.Forms.View.Details;
             // 
             // colName
             // 
@@ -77,8 +77,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(548, 299);
-            this.Controls.Add(this.lviProcesses);
-            this.Controls.Add(this.btnSelectProcess);
+            this.Controls.Add(this.ListViewProcesses);
+            this.Controls.Add(this.ButtonSelectProcess);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -91,8 +91,8 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnSelectProcess;
-        private System.Windows.Forms.ListView lviProcesses;
+        private System.Windows.Forms.Button ButtonSelectProcess;
+        private System.Windows.Forms.ListView ListViewProcesses;
         private System.Windows.Forms.ColumnHeader colName;
         private System.Windows.Forms.ColumnHeader colPid;
         private System.Windows.Forms.ColumnHeader colWndTitle;

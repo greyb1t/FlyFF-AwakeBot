@@ -1,36 +1,25 @@
-﻿namespace FlyFF_AwakeBot {
-  public class Awake {
-    public string Name { get; set; }
+﻿using System;
 
-    public string Text { get; set; }
+namespace FlyFF_AwakeBot
+{
+    public class Awake : ICloneable
+    {
+        public string Name { get; set; }
+        public string Text { get; set; }
+        public short TypeIndex { get; set; }
+        public int? Value { get; set; }
 
-    public short? TypeIndex { get; set; }
+        public object Clone()
+        {
+            return new Awake()
+            {
+                Name = Name,
+                Text = Text,
+                TypeIndex = TypeIndex,
+                Value = Value,
+            };
+        }
 
-    public int? Value { get; set; }
-
-    public Awake() { }
-
-    public Awake(string awakeText) {
-      Text = awakeText;
+        public override string ToString() => "Name: " + Name + ", Value: " + Value.ToString();
     }
-
-    public Awake(string awakeName, string awakeText, short? typeIndex) {
-      Name = awakeName;
-      Text = awakeText;
-      TypeIndex = typeIndex;
-    }
-
-    public static Awake Empty {
-      get {
-        Awake awake = new Awake("", "", -1) {
-          Value = -1
-        };
-        return awake;
-      }
-    }
-
-    public override string ToString() {
-      return "Name: " + Name + ", Value: " + Value.ToString();
-    }
-  }
 }
