@@ -120,6 +120,18 @@
   <metadata name="toolTipItemPos.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>242, 17</value>
   </metadata>
+  <data name="CheckboxStopIfAwakeUnrecognized.ToolTip" xml:space="preserve">
+    <value>Normally, the bot would continue if an awake unrecognized, but if you enable this option
+it will competely stop.
+
+When missing one or more awakes in the server config, the awakes missing will not be recognized.</value>
+  </data>
+  <metadata name="toolTipItemPos.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>242, 17</value>
+  </metadata>
+  <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>132, 17</value>
+  </metadata>
   <data name="NumericAwakeGroup.ToolTip" xml:space="preserve">
     <value>Awake groups are divided into numbers.
 This allows to tell the bot that I have 2 or more different group of awakes that I want. 
@@ -127,9 +139,6 @@ The bot will divide the awakes into their own group and stop if any of the awake
 
 In other words, I want one awake (group 1) OR I want another awake (group 2). The bot will stop for either one.</value>
   </data>
-  <metadata name="imageList1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>132, 17</value>
-  </metadata>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>

@@ -88,6 +88,7 @@
             this.TabControlDebugImageProcessingPage3 = new System.Windows.Forms.TabPage();
             this.LabelStep3 = new System.Windows.Forms.Label();
             this.PictureBoxDebug3 = new System.Windows.Forms.PictureBox();
+            this.CheckboxStopIfAwakeUnrecognized = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBarBeforeSnapshotMsDelay)).BeginInit();
             this.GroupBoxNewAwake.SuspendLayout();
@@ -106,6 +107,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.CheckboxStopIfAwakeUnrecognized);
             this.groupBox1.Controls.Add(this.ComboBoxSupportAugmentation);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.LabelAwakeReadRectangle);
@@ -139,7 +141,7 @@
             // ComboBoxSupportAugmentation
             // 
             this.ComboBoxSupportAugmentation.AutoSize = true;
-            this.ComboBoxSupportAugmentation.Location = new System.Drawing.Point(232, 28);
+            this.ComboBoxSupportAugmentation.Location = new System.Drawing.Point(228, 35);
             this.ComboBoxSupportAugmentation.Name = "ComboBoxSupportAugmentation";
             this.ComboBoxSupportAugmentation.Size = new System.Drawing.Size(143, 17);
             this.ComboBoxSupportAugmentation.TabIndex = 12;
@@ -651,7 +653,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.31";
+            this.label8.Text = "Version: 1.34";
             // 
             // TabControlDebugImageProcessing
             // 
@@ -757,6 +759,17 @@
             this.PictureBoxDebug3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.PictureBoxDebug3.TabIndex = 1;
             this.PictureBoxDebug3.TabStop = false;
+            // 
+            // CheckboxStopIfAwakeUnrecognized
+            // 
+            this.CheckboxStopIfAwakeUnrecognized.AutoSize = true;
+            this.CheckboxStopIfAwakeUnrecognized.Location = new System.Drawing.Point(228, 19);
+            this.CheckboxStopIfAwakeUnrecognized.Name = "CheckboxStopIfAwakeUnrecognized";
+            this.CheckboxStopIfAwakeUnrecognized.Size = new System.Drawing.Size(164, 17);
+            this.CheckboxStopIfAwakeUnrecognized.TabIndex = 13;
+            this.CheckboxStopIfAwakeUnrecognized.Text = "Stop if awake not recognized";
+            this.toolTipItemPos.SetToolTip(this.CheckboxStopIfAwakeUnrecognized, resources.GetString("CheckboxStopIfAwakeUnrecognized.ToolTip"));
+            this.CheckboxStopIfAwakeUnrecognized.UseVisualStyleBackColor = true;
             // 
             // AwakeBotUserInterface
             // 
@@ -868,5 +881,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown NumericAwakeGroup;
+        public System.Windows.Forms.CheckBox CheckboxStopIfAwakeUnrecognized;
     }
 }

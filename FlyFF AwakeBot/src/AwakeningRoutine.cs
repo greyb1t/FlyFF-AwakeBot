@@ -130,8 +130,17 @@ namespace FlyFF_AwakeBot
                     {
                         var stopWatch = Stopwatch.StartNew();
 
+                        MouseSimulator.SetCursorPosition(new Point(_botConfig.ItemPosition.X + 3, _botConfig.ItemPosition.Y));
+
+                        Thread.Sleep(50);
+
+                        MouseSimulator.SetCursorPosition(new Point(_botConfig.ItemPosition.X - 3, _botConfig.ItemPosition.Y));
+
+                        Thread.Sleep(50);
+
                         // Hover over the item to check the awake
                         MouseSimulator.SetCursorPosition(_botConfig.ItemPosition);
+
 
                         // Add specified delay to compensate for laggy server
                         int delayBeforeSnapshot = 0;
@@ -174,9 +183,29 @@ namespace FlyFF_AwakeBot
 
                         AppendLog(awakeAchieved);
 
-                        var preferredAwakesList = ConvertAwakeItemListToAwakeList(preferredAwakeItemList);
-
                         bool shouldBreak = false;
+
+                        if (_ui.CheckboxStopIfAwakeUnrecognized.Checked)
+                        {
+                            foreach (var awake in itemAwakes)
+                            {
+                                if (awake.TypeIndex == -1)
+                                {
+                                    StopBot();
+
+                                    AppendLog("An awake was not recognized, stopping the bot.");
+
+                                    shouldBreak = true;
+
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (shouldBreak)
+                            break;
+
+                        var preferredAwakesList = ConvertAwakeItemListToAwakeList(preferredAwakeItemList);
 
                         // Go through each awake group and see if any of them meets the requirements
                         foreach (var preferredAwake in preferredAwakesList)

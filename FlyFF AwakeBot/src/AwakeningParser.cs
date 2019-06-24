@@ -115,11 +115,11 @@ namespace FlyFF_AwakeBot
             int plusMinusIndex = awake.IndexOfAny(new char[] { '+', '-' });
 
             if (plusMinusIndex != -1)
-                awake = awake.Substring(0, plusMinusIndex - 1);
+                awake = awake.Substring(0, plusMinusIndex);
             else
                 throw new AwakeningParseException($"Unable to find the '+' or '-' in the awake: \"{awake}\"");
 
-            string strippedAwake = StringUtils.StripCommasAndDots(awake.ToLower());
+            string strippedAwake = StringUtils.StripCommasAndDots(awake.ToLower()).TrimEnd(' ');
 
             for (short i = 0; i < _serverConfig.AwakeTypes.Count; ++i)
             {
