@@ -7,7 +7,7 @@
     <ProjectGuid>{C9EE6016-1999-411A-891C-EF392F6A3915}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FlyFF_AwakeBot</RootNamespace>
+    <RootNamespace>Awabot</RootNamespace>
     <AssemblyName>Flyff Awabot</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -72,50 +72,54 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\AccuracyBenchmark.cs" />
-    <Compile Include="src\AwakeItem.cs" />
-    <Compile Include="src\AwakeningParseException.cs" />
-    <Compile Include="src\AwakeningParser.cs" />
-    <Compile Include="src\AwakeningResolver.cs" />
-    <Compile Include="src\AwakeningRoutine.cs" />
-    <Compile Include="src\BotConfig.cs" />
-    <Compile Include="src\KeyboardHook.cs" />
-    <Compile Include="src\Utils\MouseSimulator.cs" />
-    <Compile Include="src\Awake.cs" />
-    <Compile Include="src\ServerConfig.cs" />
-    <Compile Include="src\ThreadSafeControlHelper.cs" />
-    <Compile Include="src\Forms\AwakeBotUserInterface.cs">
+    <Compile Include="src\Awabot.Bot\AccuracyBenchmark.cs" />
+    <Compile Include="src\Awabot.Bot\Structures\Pixel.cs" />
+    <Compile Include="src\Awabot.Bot\Structures\PixelRange.cs" />
+    <Compile Include="src\Awabot.Core\Extensions\StringExtensions.cs" />
+    <Compile Include="src\Awabot.Core\Helpers\ErrorDisplayer.cs" />
+    <Compile Include="src\Awabot.Core\Structures\AwakeItem.cs" />
+    <Compile Include="src\Awabot.Core\Exceptions\AwakeningParseException.cs" />
+    <Compile Include="src\Awabot.Bot\Bot\AwakeningParser.cs" />
+    <Compile Include="src\Awabot.Bot\Bot\AwakeningResolver.cs" />
+    <Compile Include="src\Awabot.Bot\Bot\AwakeningRoutine.cs" />
+    <Compile Include="src\Awabot.Bot\Structures\BotConfiguration.cs" />
+    <Compile Include="src\Awabot.Bot\KeyboardHook.cs" />
+    <Compile Include="src\Awabot.Core\Helpers\MouseHelper.cs" />
+    <Compile Include="src\Awabot.Core\Structures\Awake.cs" />
+    <Compile Include="src\Awabot.Bot\Structures\ServerConfig.cs" />
+    <Compile Include="src\Awabot.UI\Helpers\LogHelper.cs" />
+    <Compile Include="src\Awabot.UI\Helpers\ThreadSafeControlHelper.cs" />
+    <Compile Include="src\Awabot.UI\Forms\AwakeBotUserInterface.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Forms\AwakeBotUserInterface.Designer.cs">
+    <Compile Include="src\Awabot.UI\Forms\AwakeBotUserInterface.Designer.cs">
       <DependentUpon>AwakeBotUserInterface.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Globals.cs" />
-    <Compile Include="src\ServerConfigManager.cs" />
-    <Compile Include="src\Forms\AwakeSelector.cs">
+    <Compile Include="src\Awabot.Bot\Config\Globals.cs" />
+    <Compile Include="src\Awabot.Bot\Bot\ServerConfigManager.cs" />
+    <Compile Include="src\Awabot.UI\Forms\AwakeSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Forms\AwakeSelector.Designer.cs">
+    <Compile Include="src\Awabot.UI\Forms\AwakeSelector.Designer.cs">
       <DependentUpon>AwakeSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Forms\ProcessSelector.cs">
+    <Compile Include="src\Awabot.UI\Forms\ProcessSelector.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="src\Forms\ProcessSelector.Designer.cs">
+    <Compile Include="src\Awabot.UI\Forms\ProcessSelector.Designer.cs">
       <DependentUpon>ProcessSelector.cs</DependentUpon>
     </Compile>
-    <Compile Include="src\Program.cs" />
+    <Compile Include="src\Awabot.Bot\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Utils\StringUtils.cs" />
-    <Compile Include="src\Win32.cs" />
-    <Compile Include="src\Utils\XmlUtils.cs" />
-    <EmbeddedResource Include="src\Forms\AwakeBotUserInterface.resx">
+    <Compile Include="src\Awabot.Core\Helpers\Win32.cs" />
+    <Compile Include="src\Awabot.Core\Helpers\XmlUtils.cs" />
+    <EmbeddedResource Include="src\Awabot.UI\Forms\AwakeBotUserInterface.resx">
       <DependentUpon>AwakeBotUserInterface.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Forms\AwakeSelector.resx">
+    <EmbeddedResource Include="src\Awabot.UI\Forms\AwakeSelector.resx">
       <DependentUpon>AwakeSelector.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="src\Forms\ProcessSelector.resx">
+    <EmbeddedResource Include="src\Awabot.UI\Forms\ProcessSelector.resx">
       <DependentUpon>ProcessSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -126,6 +130,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="res\app.manifest" />
     <None Include="res\packages.config" />
@@ -160,6 +165,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
