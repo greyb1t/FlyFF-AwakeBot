@@ -2,12 +2,19 @@
 
 namespace FlyFF_AwakeBot
 {
+    public enum AwakeComparisonMethod
+    {
+        Exact,
+        Contains,
+    }
+
     public class Awake : ICloneable
     {
         public string Name { get; set; }
         public string Text { get; set; }
         public short TypeIndex { get; set; }
         public int? Value { get; set; }
+        public AwakeComparisonMethod ComparisonMethod { get; set; } = AwakeComparisonMethod.Exact;
 
         public object Clone()
         {

@@ -7,7 +7,7 @@ namespace FlyFF_AwakeBot.Utils
     {
         public static void LeftClick(IntPtr hWindow, Point p)
         {
-            Win32.SetForegroundWindow(hWindow);
+            // Win32.SetForegroundWindow(hWindow);
             Win32.SetCursorPos(p.X, p.Y);
 
             const int MOUSEEVENTF_LEFTDOWN = 0x02;

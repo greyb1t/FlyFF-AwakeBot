@@ -49,18 +49,22 @@ namespace FlyFF_AwakeBot
                     string awakeText = _awakeString.Substring(lastIndex, index - lastIndex);
 
                     // if the awake text is not valid yet, then it is probably because the awake has a line break
-                    if (!IsValidAwakeLine(awakeText))
+                    while (!IsValidAwakeLine(awakeText))
                     {
                         index = _awakeString.IndexOf('\n', index + 1);
-                        if (index != -1)
-                        {
-                            awakeText = _awakeString.Substring(lastIndex, index - lastIndex);
-                            awakeText = StringUtils.StripAllNewlines(awakeText);
-                        }
+
+                        if (index == -1)
+                            break;
+
+                        awakeText = _awakeString.Substring(lastIndex, index - lastIndex);
+                        awakeText = awakeText.Replace('\n', ' ');
                     }
 
                     if (!IsValidAwakeLine(awakeText))
                         throw new AwakeningParseException($"The awaketext: \"{awakeText}\" is not a valid awake");
+
+                    awakeText = awakeText.TrimStart(new char[] { ' ' });
+                    awakeText = awakeText.TrimEnd(new char[] { ' ' });
 
                     awakes.Add(new Awake()
                     {
@@ -123,9 +127,26 @@ namespace FlyFF_AwakeBot
 
             for (short i = 0; i < _serverConfig.AwakeTypes.Count; ++i)
             {
-                // Added StripCommasAndDots because ocr mistakes '.' for ',' and vice-versa
-                if (strippedAwake == StringUtils.StripCommasAndDots(_serverConfig.AwakeTypes[i].Text.ToLower()))
-                    return i;
+                switch (_serverConfig.AwakeTypes[i].ComparisonMethod)
+                {
+                    case AwakeComparisonMethod.Exact:
+                        {
+                            // Added StripCommasAndDots because ocr mistakes '.' for ',' and vice-versa
+                            if (strippedAwake == StringUtils.StripCommasAndDots(_serverConfig.AwakeTypes[i].Text.ToLower()))
+                                return i;
+                            break;
+                        }
+                    case AwakeComparisonMethod.Contains:
+                        {
+                            // Added StripCommasAndDots because ocr mistakes '.' for ',' and vice-versa
+                            if (strippedAwake.Contains(StringUtils.StripCommasAndDots(_serverConfig.AwakeTypes[i].Text.ToLower())))
+                                return i;
+                            break;
+                        }
+                    default:
+                        break;
+                }
+
             }
 
             return -1;

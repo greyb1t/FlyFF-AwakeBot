@@ -122,7 +122,7 @@ namespace FlyFF_AwakeBot
             {
                 AppendLog("Bot has started");
 
-                Win32.SetForegroundWindow(_botConfig.Process.Handle);
+                Win32.SetForegroundWindow(_botConfig.Process.MainWindowHandle);
 
                 using (AwakeningResolver awakeResolver = new AwakeningResolver(_serverConfig))
                 {
@@ -140,7 +140,6 @@ namespace FlyFF_AwakeBot
 
                         // Hover over the item to check the awake
                         MouseSimulator.SetCursorPosition(_botConfig.ItemPosition);
-
 
                         // Add specified delay to compensate for laggy server
                         int delayBeforeSnapshot = 0;
@@ -231,34 +230,36 @@ namespace FlyFF_AwakeBot
                         AppendLog("Preferred awake was not achieved");
 
                         // Doubleclick reversion scroll
-                        MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.ReversionPosition);
-                        MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.ReversionPosition);
+                        MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.ReversionPosition);
+                        MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.ReversionPosition);
 
-                        int ms = 200;
+                        const int ms = 200;
 
                         Thread.Sleep(ms);
 
                         // Click item with reversion
-                        MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.ItemPosition);
+                        MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.ItemPosition);
+
+                        AppendLog("ScrollFinishDelay: " + _serverConfig.ScrollFinishDelay.ToString());
 
                         // Wait until the reversion is done on the item
                         Thread.Sleep(_serverConfig.ScrollFinishDelay);
 
                         if (_ui.ComboBoxSupportAugmentation.Checked)
                         {
-                            MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.AwakeScrollPosition);
+                            MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.AwakeScrollPosition);
                         }
                         else
                         {
                             // Doubleclick awake scroll
-                            MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.AwakeScrollPosition);
-                            MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.AwakeScrollPosition);
+                            MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.AwakeScrollPosition);
+                            MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.AwakeScrollPosition);
                         }
 
                         Thread.Sleep(ms);
 
                         // Click item with awake scroll
-                        MouseSimulator.LeftClick(_botConfig.Process.Handle, _botConfig.ItemPosition);
+                        MouseSimulator.LeftClick(_botConfig.Process.MainWindowHandle, _botConfig.ItemPosition);
 
                         Thread.Sleep(ms);
 

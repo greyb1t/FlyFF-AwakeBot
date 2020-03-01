@@ -26,6 +26,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AwakeBotUserInterface));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.CheckboxStopIfAwakeUnrecognized = new System.Windows.Forms.CheckBox();
             this.ComboBoxSupportAugmentation = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.LabelAwakeReadRectangle = new System.Windows.Forms.Label();
@@ -88,7 +89,9 @@
             this.TabControlDebugImageProcessingPage3 = new System.Windows.Forms.TabPage();
             this.LabelStep3 = new System.Windows.Forms.Label();
             this.PictureBoxDebug3 = new System.Windows.Forms.PictureBox();
-            this.CheckboxStopIfAwakeUnrecognized = new System.Windows.Forms.CheckBox();
+            this.TabControlDebugImageProcessingPage4 = new System.Windows.Forms.TabPage();
+            this.LabelStep4 = new System.Windows.Forms.Label();
+            this.PictureBoxDebug4 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.TrackBarBeforeSnapshotMsDelay)).BeginInit();
             this.GroupBoxNewAwake.SuspendLayout();
@@ -103,6 +106,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug2)).BeginInit();
             this.TabControlDebugImageProcessingPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug3)).BeginInit();
+            this.TabControlDebugImageProcessingPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug4)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -137,6 +142,17 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Setup";
+            // 
+            // CheckboxStopIfAwakeUnrecognized
+            // 
+            this.CheckboxStopIfAwakeUnrecognized.AutoSize = true;
+            this.CheckboxStopIfAwakeUnrecognized.Location = new System.Drawing.Point(228, 19);
+            this.CheckboxStopIfAwakeUnrecognized.Name = "CheckboxStopIfAwakeUnrecognized";
+            this.CheckboxStopIfAwakeUnrecognized.Size = new System.Drawing.Size(164, 17);
+            this.CheckboxStopIfAwakeUnrecognized.TabIndex = 13;
+            this.CheckboxStopIfAwakeUnrecognized.Text = "Stop if awake not recognized";
+            this.toolTipItemPos.SetToolTip(this.CheckboxStopIfAwakeUnrecognized, resources.GetString("CheckboxStopIfAwakeUnrecognized.ToolTip"));
+            this.CheckboxStopIfAwakeUnrecognized.UseVisualStyleBackColor = true;
             // 
             // ComboBoxSupportAugmentation
             // 
@@ -506,7 +522,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(815, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(816, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -653,13 +669,14 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.34";
+            this.label8.Text = "Version: 1.45";
             // 
             // TabControlDebugImageProcessing
             // 
             this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage1);
             this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage2);
             this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage3);
+            this.TabControlDebugImageProcessing.Controls.Add(this.TabControlDebugImageProcessingPage4);
             this.TabControlDebugImageProcessing.Location = new System.Drawing.Point(816, 28);
             this.TabControlDebugImageProcessing.Name = "TabControlDebugImageProcessing";
             this.TabControlDebugImageProcessing.SelectedIndex = 0;
@@ -760,22 +777,42 @@
             this.PictureBoxDebug3.TabIndex = 1;
             this.PictureBoxDebug3.TabStop = false;
             // 
-            // CheckboxStopIfAwakeUnrecognized
+            // TabControlDebugImageProcessingPage4
             // 
-            this.CheckboxStopIfAwakeUnrecognized.AutoSize = true;
-            this.CheckboxStopIfAwakeUnrecognized.Location = new System.Drawing.Point(228, 19);
-            this.CheckboxStopIfAwakeUnrecognized.Name = "CheckboxStopIfAwakeUnrecognized";
-            this.CheckboxStopIfAwakeUnrecognized.Size = new System.Drawing.Size(164, 17);
-            this.CheckboxStopIfAwakeUnrecognized.TabIndex = 13;
-            this.CheckboxStopIfAwakeUnrecognized.Text = "Stop if awake not recognized";
-            this.toolTipItemPos.SetToolTip(this.CheckboxStopIfAwakeUnrecognized, resources.GetString("CheckboxStopIfAwakeUnrecognized.ToolTip"));
-            this.CheckboxStopIfAwakeUnrecognized.UseVisualStyleBackColor = true;
+            this.TabControlDebugImageProcessingPage4.Controls.Add(this.LabelStep4);
+            this.TabControlDebugImageProcessingPage4.Controls.Add(this.PictureBoxDebug4);
+            this.TabControlDebugImageProcessingPage4.Location = new System.Drawing.Point(4, 22);
+            this.TabControlDebugImageProcessingPage4.Name = "TabControlDebugImageProcessingPage4";
+            this.TabControlDebugImageProcessingPage4.Padding = new System.Windows.Forms.Padding(3);
+            this.TabControlDebugImageProcessingPage4.Size = new System.Drawing.Size(432, 487);
+            this.TabControlDebugImageProcessingPage4.TabIndex = 3;
+            this.TabControlDebugImageProcessingPage4.Text = "Step 4";
+            this.TabControlDebugImageProcessingPage4.UseVisualStyleBackColor = true;
+            // 
+            // LabelStep4
+            // 
+            this.LabelStep4.AutoSize = true;
+            this.LabelStep4.Location = new System.Drawing.Point(7, 361);
+            this.LabelStep4.Name = "LabelStep4";
+            this.LabelStep4.Size = new System.Drawing.Size(93, 13);
+            this.LabelStep4.TabIndex = 4;
+            this.LabelStep4.Text = "Increased the size";
+            // 
+            // PictureBoxDebug4
+            // 
+            this.PictureBoxDebug4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PictureBoxDebug4.Location = new System.Drawing.Point(6, 6);
+            this.PictureBoxDebug4.Name = "PictureBoxDebug4";
+            this.PictureBoxDebug4.Size = new System.Drawing.Size(420, 348);
+            this.PictureBoxDebug4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.PictureBoxDebug4.TabIndex = 3;
+            this.PictureBoxDebug4.TabStop = false;
             // 
             // AwakeBotUserInterface
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(815, 548);
+            this.ClientSize = new System.Drawing.Size(816, 548);
             this.Controls.Add(this.TabControlDebugImageProcessing);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label8);
@@ -811,6 +848,9 @@
             this.TabControlDebugImageProcessingPage3.ResumeLayout(false);
             this.TabControlDebugImageProcessingPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug3)).EndInit();
+            this.TabControlDebugImageProcessingPage4.ResumeLayout(false);
+            this.TabControlDebugImageProcessingPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureBoxDebug4)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -882,5 +922,8 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.NumericUpDown NumericAwakeGroup;
         public System.Windows.Forms.CheckBox CheckboxStopIfAwakeUnrecognized;
+        private System.Windows.Forms.TabPage TabControlDebugImageProcessingPage4;
+        public System.Windows.Forms.Label LabelStep4;
+        public System.Windows.Forms.PictureBox PictureBoxDebug4;
     }
 }

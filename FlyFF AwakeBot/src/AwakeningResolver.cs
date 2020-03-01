@@ -2,12 +2,14 @@
 // #define USE_NET_TESSERACT_WRAPPER
 
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Text;
 using FlyFF_AwakeBot.Utils;
 
 
@@ -36,6 +38,21 @@ namespace FlyFF_AwakeBot
         public AwakeningResolver(ServerConfig serverConfig)
         {
             ServerConfig = serverConfig;
+
+            string whitelistedCharactersString = "";
+
+            foreach (var item in ServerConfig.WhitelistedCharacters)
+            {
+                whitelistedCharactersString += item;
+            }
+
+            // Due to not being able to use the arguments to tesseract.exe to provide 
+            // unicode non-english characters I write a new config each time as a workaround
+            // Scuffed as fuck
+            using (var sw = new StreamWriter(Globals.TesseractFolderName + "\\tessdata\\configs\\whitelisted_characters"))
+            {
+                sw.Write("tessedit_char_whitelist " + whitelistedCharactersString);
+            }
 
             // The .net tesseract code is deprectated because the creator has not updated their wrapper to tesseract 4
 #if USE_NET_TESSERACT_WRAPPER
@@ -84,20 +101,24 @@ namespace FlyFF_AwakeBot
 
             targetBitmap.Save(tempImagePath);
 
-            ProcessStartInfo info = new ProcessStartInfo();
-            info.WorkingDirectory = Environment.CurrentDirectory + "\\" + Globals.TesseractFolderName;
-            info.WindowStyle = ProcessWindowStyle.Hidden;
-            info.UseShellExecute = false;
-            info.FileName = "cmd.exe";
-            info.CreateNoWindow = true;
-            info.RedirectStandardOutput = true;
-            info.RedirectStandardError = true;
-            info.Arguments =
+            ProcessStartInfo info = new ProcessStartInfo
+            {
+                WorkingDirectory = Environment.CurrentDirectory + "\\" + Globals.TesseractFolderName,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = false,
+                FileName = "cmd.exe",
+                CreateNoWindow = true,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                Arguments =
                 "/c tesseract.exe " +
                 "\"" + tempImagePath + "\"" +
                 " stdout" +
                 " -l " + ServerConfig.Language +
-                " --psm 6";
+                " --psm 6 whitelisted_characters",
+
+                StandardOutputEncoding = Encoding.UTF8
+            };
 
             using (Process process = Process.Start(info))
             {
@@ -130,7 +151,7 @@ namespace FlyFF_AwakeBot
 
         public Bitmap SnapshotRectangle(Rectangle rectangle)
         {
-            Bitmap bitmap = new Bitmap(rectangle.Width, rectangle.Height, PixelFormat.Format24bppRgb);
+            Bitmap bitmap = new Bitmap(rectangle.Width, rectangle.Height, /*PixelFormat.Format24bppRgb*/PixelFormat.Format64bppArgb);
 
             bitmap.SetResolution(300, 300);
 
@@ -156,7 +177,7 @@ namespace FlyFF_AwakeBot
             {
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighQuality;
-                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                g.InterpolationMode = InterpolationMode.NearestNeighbor;
                 g.SmoothingMode = SmoothingMode.HighQuality;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
@@ -307,17 +328,28 @@ namespace FlyFF_AwakeBot
         /// <returns></returns>
         public Bitmap DifferentiateAwakeText(Bitmap bitmap)
         {
-            Pixel requiredPixelColor = ServerConfig.AwakeTextPixelColor;
+            var requiredPixelColorsList = ServerConfig.AwakeTextPixelColorList;
 
             unsafe
             {
                 ForeachPixel(bitmap, (x, y, pixel) =>
                 {
-                    if (pixel->r == requiredPixelColor.r &&
-                    pixel->g == requiredPixelColor.g &&
-                    pixel->b == requiredPixelColor.b)
-                    {
+                    bool matchedAnyRequiredPixels = false;
 
+                    foreach (var item in requiredPixelColorsList)
+                    {
+                        var requiredPixelColors = item;
+
+                        if (pixel->r >= requiredPixelColors[0].PixelColorMin && pixel->r <= requiredPixelColors[0].PixelColorMax &&
+                            pixel->g >= requiredPixelColors[1].PixelColorMin && pixel->g <= requiredPixelColors[1].PixelColorMax &&
+                            pixel->b >= requiredPixelColors[2].PixelColorMin && pixel->b <= requiredPixelColors[2].PixelColorMax)
+                        {
+                            matchedAnyRequiredPixels = true;
+                        }
+                    }
+
+                    if (matchedAnyRequiredPixels)
+                    {
                         pixel->r = 0;
                         pixel->g = 0;
                         pixel->b = 0;
