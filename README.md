@@ -1,4 +1,4 @@
-# Flyff Awakebot
+# Flyff Awakebot (now with CHAOTIC code!)
 Flyff Awakebot is a software designed to do the awakening for you!
 
 ![alt text](https://i.epvpimg.com/1zZQg.png "Logo Title Text 1")
