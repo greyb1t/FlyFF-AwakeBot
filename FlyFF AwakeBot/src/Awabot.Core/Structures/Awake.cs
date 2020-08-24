@@ -12,6 +12,7 @@ namespace Awabot.Core.Structures
     {
         public string Name { get; set; }
         public string Text { get; set; }
+        public string SubstringToFind { get; set; }
         public short TypeIndex { get; set; }
         public int? Value { get; set; }
         public AwakeComparisonMethod ComparisonMethod { get; set; } = AwakeComparisonMethod.Exact;

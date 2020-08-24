@@ -56,6 +56,14 @@ namespace Awabot.Bot.Bot
             if (ocrIgnoreWordsSettingNode != null)
             {
                 config.OcrIgnoredWords = ocrIgnoreWordsSettingNode.InnerText.Split(',');
+
+                foreach (var word in config.OcrIgnoredWords)
+                {
+                    foreach (char c in word)
+                    {
+                        config.WhitelistedCharacters.Add(c);
+                    }
+                }
             }
 
             return config;
@@ -88,6 +96,8 @@ namespace Awabot.Bot.Bot
 
                     AwakeComparisonMethod comparisonMethod = AwakeComparisonMethod.Exact;
 
+                    string substringToFind = "";
+
                     if (comparisonAttr != null)
                     {
                         if (comparisonAttr.Value == "Exact")
@@ -97,6 +107,14 @@ namespace Awabot.Bot.Bot
                         else if (comparisonAttr.Value == "Contains")
                         {
                             comparisonMethod = AwakeComparisonMethod.Contains;
+                            var textToFindAttr = XmlUtils.GetAttribute(awakeTypeNode, "text_to_find");
+
+                            if (textToFindAttr == null)
+                            {
+                                throw new Exception("You are missing the text_to_find attribute in the awake because you have the Contains comparison method.");
+                            }
+
+                            substringToFind = textToFindAttr.Value;
                         }
                         else
                         {
@@ -108,6 +126,7 @@ namespace Awabot.Bot.Bot
                     {
                         Name = XmlUtils.GetAttribute(awakeTypeNode, "name").Value,
                         Text = XmlUtils.GetAttribute(awakeTypeNode, "gametext").Value,
+                        SubstringToFind = substringToFind,
                         TypeIndex = (short)awakeTypes.Count,
                         ComparisonMethod = comparisonMethod,
                     };

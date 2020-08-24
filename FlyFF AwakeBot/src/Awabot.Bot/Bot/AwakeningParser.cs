@@ -152,7 +152,7 @@ namespace Awabot.Bot.Bot
                     case AwakeComparisonMethod.Contains:
                         {
                             // Added StripCommasAndDots because ocr mistakes '.' for ',' and vice-versa
-                            if (strippedAwake.Contains(_serverConfig.AwakeTypes[i].Text.ToLower().StripCommasAndDots()))
+                            if (strippedAwake.Contains(_serverConfig.AwakeTypes[i].SubstringToFind.ToLower().StripCommasAndDots()))
                                 return i;
                             break;
                         }

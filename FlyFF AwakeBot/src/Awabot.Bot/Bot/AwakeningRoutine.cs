@@ -10,6 +10,8 @@ using Awabot.Bot.Structures;
 using Awabot.UI.Forms;
 using Awabot.Core.Structures;
 using Awabot.Core.Helpers;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace Awabot.Bot.Bot
 {
@@ -108,6 +110,8 @@ namespace Awabot.Bot.Bot
 
         private void AwakeningLoopThread(List<AwakeItem> preferredAwakeItemList)
         {
+            Queue<List<Awake>> latestAwakes = new Queue<List<Awake>>();
+
             try
             {
                 LogHelper.AppendLog(_ui, "Bot has started");
@@ -118,6 +122,45 @@ namespace Awabot.Bot.Bot
 
                 while (_isRunning)
                 {
+                    if (latestAwakes.Count >= 3)
+                    {
+                        // Check if the 3 awakes in the queue are all the same
+                        var firstAwakes = latestAwakes.ElementAt(0);
+
+                        bool anyNotEqual = false;
+
+                        for (int i = 1; i < latestAwakes.Count; ++i)
+                        {
+                            var awakes = latestAwakes.ElementAt(i);
+
+                            bool sameSize = awakes.Count == firstAwakes.Count;
+
+                            if (!sameSize)
+                            {
+                                anyNotEqual = true;
+                                break;
+                            }
+
+                            for (int j = 0; j < awakes.Count; ++j)
+                            {
+                                bool equalText = awakes[j].Text == firstAwakes[j].Text;
+                                bool equalValue = awakes[j].Value == firstAwakes[j].Value;
+                                if (!equalText || !equalValue)
+                                {
+                                    anyNotEqual = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (!anyNotEqual)
+                        {
+                            LogHelper.AppendLog(_ui, "Same awake the last 3 times, stopping the bot.");
+                            StopBot();
+                            return;
+                        }
+                    }
+
                     var stopWatch = Stopwatch.StartNew();
 
                     MouseHelper.SetCursorPosition(new Point(_botConfig.ItemPosition.X + 3, _botConfig.ItemPosition.Y));
@@ -153,11 +196,32 @@ namespace Awabot.Bot.Bot
 
                     UpdateStepUi(_ui.PictureBoxDebug3, _ui.LabelStep3, bmp);
 
+                    float newDPI = 300;
+
+                    Size newSize = bmp.Size;
+
+                    float inchesWidth = (float)bmp.Width / bmp.HorizontalResolution;
+                    float inchesHeight = (float)bmp.Height / bmp.VerticalResolution;
+
+                    newSize.Width = (int)(newDPI * inchesWidth);
+                    newSize.Height = (int)(newDPI * inchesHeight);
+
+                    bmp = awakeResolver.ResizeImage(bmp, newSize);
+                    bmp.SetResolution(newDPI, newDPI);
+
                     string awakeText = awakeResolver.GetAwakening(bmp);
 
                     LogHelper.AppendLog(_ui, "Raw awake In-game text: \"" + awakeText + "\"");
 
                     List<Awake> itemAwakes = new AwakeningParser(_serverConfig, awakeText).GetCompletedAwakes();
+
+                    if (latestAwakes.Count >= 3)
+                    {
+                        // Remove the object that was the first one in
+                        latestAwakes.Dequeue();
+                    }
+
+                    latestAwakes.Enqueue(itemAwakes);
 
                     string awakeAchieved = "";
 

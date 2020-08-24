@@ -25,12 +25,48 @@ namespace Awabot.Bot.Bot
 
             string whitelistedCharactersString = new string(_serverConfig.WhitelistedCharacters.ToList().ToArray());
 
+            const string UserWordsSuffix = "user-words";
+
             // Due to not being able to use the arguments to tesseract.exe to provide 
             // unicode non-english characters I write a new config each time as a workaround
             // Scuffed as fuck
             using (var sw = new StreamWriter(Globals.TesseractFolderName + "\\tessdata\\configs\\whitelisted_characters"))
             {
-                sw.Write("tessedit_char_whitelist " + whitelistedCharactersString);
+                sw.WriteLine("tessedit_char_whitelist " + whitelistedCharactersString);
+
+                // sw.WriteLine("load_system_dawg F");
+                // sw.WriteLine("load_freq_dawg F");
+
+                // Tells tesseract the suffix on the custom dictionary file
+                sw.WriteLine("user_words_suffix " + UserWordsSuffix);
+            }
+
+            HashSet<string> words = new HashSet<string>();
+
+            foreach (var awake in serverConfig.AwakeTypes)
+            {
+                var wordsInAwake = awake.Text.Split(' ');
+                foreach (var word in wordsInAwake)
+                {
+                    words.Add(word);
+                }
+            }
+
+            foreach (var sentence in serverConfig.OcrIgnoredWords)
+            {
+                var wordsInIgnoredSentence = sentence.Split(' ');
+                foreach (var word in wordsInIgnoredSentence)
+                {
+                    words.Add(word);
+                }
+            }
+
+            using (var sw = new StreamWriter(Globals.TesseractFolderName + "\\tessdata\\" + serverConfig.Language + "." + UserWordsSuffix))
+            {
+                foreach (var word in words)
+                {
+                    sw.WriteLine(word);
+                }
             }
         }
 
@@ -50,11 +86,11 @@ namespace Awabot.Bot.Bot
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 Arguments =
-                "/c tesseract.exe " +
-                "\"" + tempImagePath + "\"" +
-                " stdout" +
-                " -l " + _serverConfig.Language +
-                " --psm 6 whitelisted_characters",
+                    "/c tesseract.exe " +
+                    "\"" + tempImagePath + "\"" +
+                    " stdout" +
+                    " -l " + _serverConfig.Language +
+                    " --psm 6 whitelisted_characters",
 
                 StandardOutputEncoding = Encoding.UTF8
             };
@@ -84,9 +120,7 @@ namespace Awabot.Bot.Bot
 
         public Bitmap SnapshotRectangle(Rectangle rectangle)
         {
-            Bitmap bitmap = new Bitmap(rectangle.Width, rectangle.Height, PixelFormat.Format64bppArgb);
-
-            bitmap.SetResolution(300, 300);
+            Bitmap bitmap = new Bitmap(rectangle.Width, rectangle.Height, PixelFormat.Format32bppArgb);
 
             using (Graphics g = Graphics.FromImage(bitmap))
             {
@@ -129,12 +163,14 @@ namespace Awabot.Bot.Bot
                         pixel->r = 0;
                         pixel->g = 0;
                         pixel->b = 0;
+                        pixel->a = 255;
                     }
                     else
                     {
                         pixel->r = 255;
                         pixel->g = 255;
                         pixel->b = 255;
+                        pixel->a = 255;
                     }
                 });
             }
@@ -168,7 +204,7 @@ namespace Awabot.Bot.Bot
         unsafe public void ForeachPixel(Bitmap bitmap, PixelIterationCallback pixelCallback)
         {
             BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
             byte* pBeg = (byte*)bmpData.Scan0.ToPointer();
 
@@ -176,8 +212,10 @@ namespace Awabot.Bot.Bot
             {
                 for (int x = 0; x < bmpData.Width; ++x)
                 {
-                    pixelCallback(x, y, (Pixel*)pBeg);
-                    pBeg += sizeof(Pixel);
+                    // 24 / 8 is dependant on the pixelformat
+                    byte* data = pBeg + y * bmpData.Stride + x * 32 / 8;
+
+                    pixelCallback(x, y, (Pixel*)data);
                 }
             }
 
@@ -189,7 +227,7 @@ namespace Awabot.Bot.Bot
         unsafe public void ForeachPixelCheckBreak(Bitmap bitmap, PixelIterationCallbackCheckBreak pixelCallback)
         {
             BitmapData bmpData = bitmap.LockBits(new Rectangle(Point.Empty, bitmap.Size),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppRgb);
+                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
             byte* pBeg = (byte*)bmpData.Scan0.ToPointer();
 
@@ -199,13 +237,14 @@ namespace Awabot.Bot.Bot
             {
                 for (int x = 0; x < bmpData.Width; ++x)
                 {
-                    if (!pixelCallback(x, y, (Pixel*)pBeg))
+                    // 24 / 8 is dependant on the pixelformat
+                    byte* data = pBeg + y * bmpData.Stride + x * 32 / 8;
+
+                    if (!pixelCallback(x, y, (Pixel*)data))
                     {
                         shouldBreak = true;
                         break;
                     }
-
-                    pBeg += sizeof(Pixel);
                 }
 
                 if (shouldBreak)
@@ -379,20 +418,16 @@ namespace Awabot.Bot.Bot
             return bitmap;
         }
 
-        [Obsolete("ResizeImage is deprecated, no longer needed.")]
         public Bitmap ResizeImage(Bitmap originalBitmap, Size newSize)
         {
             Rectangle newSizeRectangle = new Rectangle(Point.Empty, newSize);
             Bitmap newBitmap = new Bitmap(newSize.Width, newSize.Height, originalBitmap.PixelFormat);
 
-            // Use 300 DPI because it's better for tesseract
-            newBitmap.SetResolution(300, 300);
-
             using (Graphics g = Graphics.FromImage(newBitmap))
             {
                 g.CompositingMode = CompositingMode.SourceCopy;
                 g.CompositingQuality = CompositingQuality.HighQuality;
-                g.InterpolationMode = InterpolationMode.NearestNeighbor;
+                g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.SmoothingMode = SmoothingMode.HighQuality;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
 
@@ -498,7 +533,6 @@ namespace Awabot.Bot.Bot
 
                 Bitmap bitmapPart = bitmap.Clone(new Rectangle(0, top - padding, bitmap.Width, bottom - top + (padding * 2)), bitmap.PixelFormat);
                 bitmaps.Add(bitmapPart);
-                // bitmapPart.Save("bmppart" + lastAwakeEndY.ToString() + ".bmp");
 
                 lastAwakeEndY = bottom;
             }

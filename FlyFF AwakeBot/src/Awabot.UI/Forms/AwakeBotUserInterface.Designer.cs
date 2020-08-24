@@ -663,9 +663,9 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(12, 528);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(66, 13);
+            this.label7.Size = new System.Drawing.Size(263, 13);
             this.label7.TabIndex = 3;
-            this.label7.Text = "assclap.com";
+            this.label7.Text = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
             // 
             // label8
             // 
@@ -674,7 +674,7 @@
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(69, 13);
             this.label8.TabIndex = 3;
-            this.label8.Text = "Version: 1.45";
+            this.label8.Text = "Version: 1.52";
             // 
             // TabControlDebugImageProcessing
             // 

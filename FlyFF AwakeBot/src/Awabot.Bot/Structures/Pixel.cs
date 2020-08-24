@@ -8,6 +8,6 @@ namespace Awabot.src.Awabot.Bot.Structures
         public byte b;
         public byte g;
         public byte r;
-        public byte alpha;
+        public byte a;
     };
 }

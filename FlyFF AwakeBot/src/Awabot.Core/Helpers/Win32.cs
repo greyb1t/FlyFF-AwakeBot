@@ -22,6 +22,8 @@ namespace Awabot.Core.Helpers
 
     class Win32
     {
+        public static bool MissingWin32u = false;
+
         public const int WH_KEYBOARD_LL = 13;
         public const int WM_KEYDOWN = 0x0100;
 
@@ -995,37 +997,50 @@ namespace Awabot.Core.Helpers
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShowWindow(IntPtr hWnd, ShowWindowCommands nCmdShow);
 
-        /*
         [DllImport("user32.dll", EntryPoint = "SetCursorPos")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetCursorPos(int X, int Y);
-        */
 
-        public static bool SetCursorPos(int X, int Y) => NtUserSetCursorPos(X, Y);
+        public static bool SetCursorPosProxy(int X, int Y)
+        {
+            if (MissingWin32u)
+            {
+                return SetCursorPos(X, Y);
+            }
+            else
+            {
+                return NtUserSetCursorPos(X, Y);
+            }
+        }
 
         [DllImport("win32u.dll", EntryPoint = "NtUserSetCursorPos")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool NtUserSetCursorPos(int X, int Y);
 
-        /*
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, uint dwExtraInfo);
-        */
 
-        public static void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInfo)
+        public static void mouse_event_proxy(uint dwFlags, uint dx, uint dy, uint dwData, uint dwExtraInfo)
         {
-            INPUT input = new INPUT
+            if (MissingWin32u)
             {
-                type = 0 // indicate mouse input INPUT_MOUSE
-            };
+                mouse_event(dwFlags, dx, dy, dwData, dwExtraInfo);
+            }
+            else
+            {
+                INPUT input = new INPUT
+                {
+                    type = 0 // indicate mouse input INPUT_MOUSE
+                };
 
-            input.U.mi.dwFlags = (MOUSEEVENTF)dwFlags;
-            input.U.mi.dx = (int)dx;
-            input.U.mi.dy = (int)dy;
-            input.U.mi.mouseData = (int)dwData;
-            input.U.mi.dwExtraInfo = (UIntPtr)dwExtraInfo;
+                input.U.mi.dwFlags = (MOUSEEVENTF)dwFlags;
+                input.U.mi.dx = (int)dx;
+                input.U.mi.dy = (int)dy;
+                input.U.mi.mouseData = (int)dwData;
+                input.U.mi.dwExtraInfo = (UIntPtr)dwExtraInfo;
 
-            NtUserSendInput(1, new INPUT[] { input }, INPUT.Size);
+                NtUserSendInput(1, new INPUT[] { input }, INPUT.Size);
+            }
         }
 
         [DllImport("win32u.dll")]
@@ -1051,5 +1066,8 @@ namespace Awabot.Core.Helpers
 
         [DllImport("gdi32.dll")]
         public static extern int GetDeviceCaps(IntPtr hdc, int nIndex);
+
+        [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Ansi)]
+        public static extern IntPtr LoadLibrary([MarshalAs(UnmanagedType.LPStr)]string lpFileName);
     }
 }

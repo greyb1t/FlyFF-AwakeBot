@@ -58,7 +58,16 @@ namespace Awabot.Bot
                 }
             }
 
-            // AccuracyBenchmark.BeginBenchmark();
+            if (Win32.LoadLibrary("win32u.dll") == IntPtr.Zero)
+            {
+                Win32.MissingWin32u = true;
+            }
+            else
+            {
+                Win32.MissingWin32u = false;
+            }
+
+            //AccuracyBenchmark.BeginBenchmark();
 
             var hookHandle = KeyboardHook.RegisterHook();
 

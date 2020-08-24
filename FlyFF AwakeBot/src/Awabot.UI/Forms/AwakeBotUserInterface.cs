@@ -120,7 +120,7 @@ namespace Awabot.UI.Forms
             }
             catch (Exception ex)
             {
-                ErrorDisplayer.Error($"Failed while parsing the config {selectedConfig} with exception message: {ex.ToString()}");
+                ErrorDisplayer.Error($"Failed while parsing the config {selectedConfig} with exception message: {ex.Message}\n\n\n{ex.StackTrace}");
 
                 ComboBoxConfigs.SelectedIndex = -1;
                 _serverConfig = null;

@@ -2880,6 +2880,19 @@ namespace Awabot.Bot
 
                 bmp = awakeResolver.CropBitmapSmart(bmp);
 
+                float newDPI = 300;
+
+                Size newSize = bmp.Size;
+
+                float inchesWidth = (float)bmp.Width / bmp.HorizontalResolution;
+                float inchesHeight = (float)bmp.Height / bmp.VerticalResolution;
+
+                newSize.Width = (int)(newDPI * inchesWidth);
+                newSize.Height = (int)(newDPI * inchesHeight);
+
+                bmp = awakeResolver.ResizeImage(bmp, newSize);
+                bmp.SetResolution(newDPI, newDPI);
+
                 string awakeString = awakeResolver.GetAwakening(bmp);
 
                 AwakeningParser parser = new AwakeningParser(serverConfig, awakeString);
